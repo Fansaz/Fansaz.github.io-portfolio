@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mahmoud Fansa · Agentic AI Systems</title>
+<meta name="description" content="Mahmoud Fansa: computer science and network security specialist who builds AI agents for phone lines, email, DMs, live events and knowledge bases. Six systems with architecture, measured results and the bugs fixed along the way.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23C8102E'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' text-anchor='middle' fill='white'%3EMF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<script>
+  try { var q = /[?&]theme=(light|dark)/.exec(location.search); var t = q ? q[1] : localStorage.getItem('mf-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+:root {
+  --paper: #FAFAF8;
+  --fill: #EFF0ED;
+  --sheet-edge: #E2E4E0;
+  --ink: #121417;
+  --ink-2: #393E44;
+  --muted: #5C636B;
+  --rule: #CBCFD3;
+  --red: #C8102E;
+  --red-ink: #AE0E28;
+  --red-wash: rgba(200, 16, 46, 0.07);
+  --on-red: #FFFFFF;
+  --hatch: rgba(18, 20, 23, 0.09);
+  --sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue Condensed", sans-serif-condensed, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 48px);
+  --measure: 68ch;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0F1113; --fill: #181B1E; --sheet-edge: #22262A;
+    --ink: #E8EAEC; --ink-2: #C4C9CE; --muted: #959DA6; --rule: #30353A;
+    --red: #FF4B60; --red-ink: #FF7383; --red-wash: rgba(255, 75, 96, 0.10); --on-red: #0F1113;
+    --hatch: rgba(232, 234, 236, 0.08);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0F1113; --fill: #181B1E; --sheet-edge: #22262A;
+  --ink: #E8EAEC; --ink-2: #C4C9CE; --muted: #959DA6; --rule: #30353A;
+  --red: #FF4B60; --red-ink: #FF7383; --red-wash: rgba(255, 75, 96, 0.10); --on-red: #0F1113;
+  --hatch: rgba(232, 234, 236, 0.08);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; -webkit-text-size-adjust: 100%; scrollbar-color: var(--muted) var(--paper); }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 16.5px; line-height: 1.55; font-variation-settings: "wdth" 100;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+::selection { background: var(--red); color: var(--on-red); }
+img, svg, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: var(--muted); }
+a:not(.btn):not(.mark):not(.skip):hover { text-decoration-color: var(--red); color: var(--red-ink); }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+p { margin: 0 0 0.9em; max-width: var(--measure); }
+h1, h2, h3, h4 { margin: 0; font-weight: 700; line-height: 1.12; text-wrap: balance; }
+h3, h4 { line-height: 1.3; }
+code, .mono { font-family: var(--mono); font-size: 0.88em; font-variant-numeric: tabular-nums; }
+.skip { position: absolute; left: -9999px; top: 8px; background: var(--ink); color: var(--paper); padding: 8px 12px; z-index: 50; }
+.skip:focus { left: 8px; }
+.skip:hover { color: var(--paper); background: var(--red-ink); }
+
+/* Running head */
+.runhead {
+  position: sticky; top: 0; z-index: 20; background: var(--paper);
+  border-bottom: 1px solid var(--ink);
+}
+.runhead .in {
+  max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter); height: 52px;
+  display: flex; align-items: center; gap: 18px;
+}
+.mark {
+  display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink);
+  font-weight: 800; font-size: 13px; letter-spacing: 0.08em; font-variation-settings: "wdth" 125; white-space: nowrap;
+}
+.mark:hover { color: var(--ink); }
+.mark i { width: 10px; height: 10px; background: var(--red); display: block; }
+.runhead .where {
+  font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; min-width: 0; flex: 1; padding-left: 16px; border-left: 1px solid var(--rule);
+}
+.runhead .where span { display: inline-block; }
+.runhead nav { display: flex; align-items: center; gap: 4px; }
+.runhead nav a, .runhead nav button {
+  display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 10px; border: 0; background: none;
+  font: 500 13px/1 var(--sans); color: var(--ink); text-decoration: none; cursor: pointer;
+}
+.runhead nav a:hover, .runhead nav button:hover { color: var(--red-ink); background: var(--red-wash); }
+.runhead nav svg { width: 16px; height: 16px; fill: currentColor; }
+.runhead nav .theme { font-family: var(--mono); font-size: 12px; color: var(--muted); min-width: 92px; justify-content: flex-end; }
+
+/* Sheets */
+.sheet { max-width: 1280px; margin: 0 auto; padding: 56px var(--gutter) 0; }
+.sheet + .sheet { margin-top: 40px; }
+.pagefoot {
+  display: flex; justify-content: space-between; gap: 16px; margin-top: 56px; padding: 10px 0 0;
+  border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 12px; color: var(--muted);
+}
+.sec-h { display: flex; align-items: baseline; gap: 14px; font-size: 22px; letter-spacing: -0.01em; margin: 0 0 14px; }
+.sec-h .n { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--muted); min-width: 1.6em; }
+.sub-h { display: flex; gap: 12px; align-items: baseline; font-size: 16.5px; margin: 34px 0 12px; }
+.sub-h .n { font-family: var(--mono); font-weight: 500; font-size: 13.5px; color: var(--muted); min-width: 2.3em; }
+
+/* Front page */
+.front { padding-top: 28px; }
+.heavy { height: 6px; background: var(--ink); transform-origin: left center; }
+.titleblock {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end;
+  padding: 26px 0 26px; border-bottom: 1px solid var(--ink);
+}
+.titleblock h1 {
+  font-family: var(--display); font-size: clamp(3.1rem, 9.2vw, 6rem); line-height: 0.9; font-weight: 900; text-transform: uppercase;
+  font-variation-settings: "wdth" 62; letter-spacing: -0.01em;
+}
+.roles { margin: 20px 0 0; display: flex; flex-direction: column; gap: 6px; font-size: 17px; font-weight: 500; color: var(--ink-2); max-width: none; }
+.roles span { line-height: 1.35; }
+.status { border: 1px solid var(--ink); min-width: 290px; font-size: 13px; }
+.status div { display: flex; justify-content: space-between; gap: 18px; padding: 7px 12px; border-top: 1px solid var(--rule); }
+.status div:first-child { border-top: 0; background: var(--ink); color: var(--paper); font-weight: 700; letter-spacing: 0.06em; font-variation-settings: "wdth" 120; font-size: 12px; }
+.status dt, .status dd { margin: 0; }
+.status dd { font-family: var(--mono); font-size: 12.5px; text-align: right; }
+.front-cols { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 0; margin-top: 0; }
+.front-cols > div { padding: 28px 0; }
+.front-cols > div:first-child { padding-right: 36px; border-right: 1px solid var(--rule); }
+.front-cols > div:last-child { padding-left: 36px; }
+.front .sec-h { font-size: 18px; margin-bottom: 12px; }
+.feat { list-style: none; margin: 0 0 30px; padding: 0; }
+.feat li { position: relative; padding: 0 0 0 18px; margin: 0 0 10px; font-size: 15.5px; line-height: 1.45; }
+.feat li::before { content: ""; position: absolute; left: 0; top: 0.58em; width: 7px; height: 7px; background: var(--ink); }
+.apps { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 20px; font-size: 15px; }
+.apps li { padding: 5px 0; border-bottom: 1px dotted var(--rule); break-inside: avoid; }
+.desc p { font-size: 16px; }
+
+/* Figure 1-1 */
+.fbd { margin: 24px 0 0; border: 1px solid var(--ink); padding: 18px 18px 12px; background: var(--paper); }
+.fbd svg { width: 100%; height: auto; overflow: visible; }
+.fbd .blk rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.25; transition: fill 0.18s, stroke 0.18s; }
+.fbd .blk text { fill: var(--ink); }
+.fbd .blk .code { font: 500 10.5px var(--mono); fill: var(--muted); }
+.fbd .blk .name { font: 650 13.5px var(--sans); }
+.fbd .pin { stroke: var(--ink); stroke-width: 1.25; }
+.fbd .pinlbl { font: 500 12px var(--mono); fill: var(--muted); }
+.fbd .bus { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: square; }
+.fbd .tap { stroke: var(--ink); stroke-width: 1.25; fill: none; }
+.fbd .dot { fill: var(--ink); }
+.fbd .buslbl { font: 600 11px var(--sans); fill: var(--ink); text-anchor: middle; }
+.fbd .buslbl2 { font: 500 10px var(--mono); fill: var(--muted); text-anchor: middle; }
+.fbd .pk { fill: var(--red); }
+.fbd g, .fbd line, .fbd circle { transition: opacity 0.16s linear, stroke 0.16s linear, fill 0.16s linear; }
+.fbd.has-active .ghost { opacity: 0.18; }
+.fbd .on rect { stroke: var(--red); stroke-width: 2; fill: var(--red-wash); }
+.fbd .on .code { fill: var(--red-ink); }
+.fbd line.on { stroke: var(--red); }
+.fbd circle.on { fill: var(--red); }
+.fbd a { cursor: pointer; outline: none; }
+.fbd a:focus-visible rect { stroke: var(--red); stroke-width: 2.5; }
+.fbd figcaption, figure figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+figcaption b { color: var(--ink); font-weight: 650; }
+.legend { display: none; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend b { font-family: var(--mono); color: var(--ink); font-weight: 600; }
+
+/* Contents */
+.toc { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(7, auto); grid-auto-flow: column; gap: 0 48px; list-style: none; margin: 0; padding: 0; }
+.toc li a { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; text-decoration: none; font-size: 15.5px; }
+.toc li a .n { font-family: var(--mono); font-size: 13px; color: var(--muted); min-width: 2.2em; }
+.toc li a .lead { flex: 1; border-bottom: 1px dotted var(--muted); transform: translateY(-4px); min-width: 24px; }
+.toc li a .pg { font-family: var(--mono); font-size: 13px; }
+.toc li a:hover .n, .toc li a:hover .pg { color: var(--red-ink); }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+caption { caption-side: bottom; text-align: left; font-size: 13px; color: var(--muted); padding-top: 10px; }
+th {
+  text-align: left; vertical-align: bottom; background: var(--fill); padding: 9px 12px; font-weight: 650; font-size: 12px;
+  letter-spacing: 0.05em; text-transform: uppercase; font-variation-settings: "wdth" 112; border-bottom: 1px solid var(--ink); white-space: nowrap;
+}
+td { padding: 9px 12px; border-top: 1px solid var(--rule); vertical-align: top; }
+tr:first-child td { border-top: 0; }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+th.num { font-family: var(--sans); }
+td.unit { font-family: var(--mono); font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+td.mono { white-space: nowrap; }
+td.cond { color: var(--muted); font-size: 13.5px; }
+.cmp td:first-child { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.cmp td a { font-weight: 650; text-decoration: none; }
+.cmp td a:hover { text-decoration: underline; }
+.cmp tbody tr { transition: background 0.12s; }
+.cmp tbody tr:hover { background: var(--red-wash); }
+.cmp td.k { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+
+/* Project sections */
+.proj-h {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px 22px; align-items: end;
+  padding-bottom: 16px; border-bottom: 1px solid var(--ink);
+}
+.proj-h .n { font-family: var(--mono); font-weight: 600; font-size: 15px; color: var(--muted); align-self: start; padding-top: 10px; }
+.proj-h h2 { font-size: clamp(2rem, 4.6vw, 3.3rem); font-weight: 850; font-variation-settings: "wdth" 72; letter-spacing: -0.01em; line-height: 0.98; }
+.proj-h h2 .code { display: block; font-family: var(--sans); font-size: 15px; font-weight: 500; letter-spacing: 0; line-height: 1.45; color: var(--muted); margin-top: 10px; font-variation-settings: normal; }
+.proj-h .st { font-size: 13px; text-align: left; max-width: 300px; color: var(--ink-2); line-height: 1.45; border: 1px solid var(--ink); padding: 8px 12px; margin: 0; }
+.proj-h .st b { font-weight: 650; color: var(--ink); }
+.proj-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 48px; }
+.proj-body > * { min-width: 0; }
+.overview p { font-size: 16.5px; }
+.stack { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; }
+.stack li { font-family: var(--mono); font-size: 12px; padding: 3px 8px; border: 1px solid var(--rule); color: var(--ink-2); }
+
+/* Signal chain */
+.chain { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 26px; counter-reset: c; }
+.chain > li { position: relative; }
+.chain .node { border: 1px solid var(--ink); padding: 9px 10px 10px; background: var(--paper); position: relative; z-index: 1; height: 100%; }
+.chain .node b { display: block; font-size: 14px; font-weight: 650; line-height: 1.2; }
+.chain .node small { display: block; font-family: var(--sans); font-size: 13px; color: var(--muted); line-height: 1.35; margin-top: 4px; }
+.chain > li + li::before {
+  content: ""; position: absolute; left: -26px; top: 22px; width: 26px; height: 1.5px; background: var(--ink);
+  transform-origin: left center;
+}
+.chain > li + li::after {
+  content: ""; position: absolute; left: -7px; top: 18.5px; border: 4.5px solid transparent; border-left: 6px solid var(--ink); z-index: 2;
+}
+.chain.lit > li .node { border-color: var(--ink); }
+.chain .node.hot { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+.exits { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink-2); }
+.exits li { display: flex; gap: 8px; align-items: baseline; }
+.exits li::before { content: ""; width: 14px; height: 0; border-top: 1.5px dashed var(--muted); transform: translateY(-3px); }
+.exits b { font-weight: 650; color: var(--ink); }
+
+/* Errata */
+.errata { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.errata li { display: grid; grid-template-columns: 3.2em minmax(0, 1fr); gap: 0 10px; padding: 13px 0 12px; border-bottom: 1px solid var(--rule); }
+.errata .id { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--ink); padding-top: 2px; }
+.errata h4 { font-size: 15.5px; font-weight: 650; margin: 0 0 5px; }
+.errata p { font-size: 14.5px; margin: 0 0 3px; color: var(--ink-2); }
+.errata p b { color: var(--ink); font-weight: 600; }
+
+/* Characteristic charts */
+.chart { margin: 26px 0 0; }
+.chart .row { display: grid; grid-template-columns: minmax(130px, 38%) minmax(0, 1fr); gap: 12px; align-items: center; padding: 6px 0; font-size: 13.5px; }
+.chart .track { position: relative; height: 18px; border-left: 1.5px solid var(--ink); }
+.chart .track::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(to right, var(--rule) 1px, transparent 1px); background-size: 10% 100%; opacity: 0.7; z-index: 0; }
+.chart .bar { position: absolute; left: 0; top: 3px; bottom: 3px; width: var(--w); background: var(--ink); z-index: 1; transform-origin: left center; }
+.chart .bar.best { background: var(--red); }
+.chart .bar.range { left: var(--l); top: 1px; bottom: 1px; background: var(--fill); border: 1.5px solid var(--ink); display: flex; align-items: center; justify-content: center; }
+.chart .bar.range span { font-family: var(--mono); font-size: 12px; line-height: 1; white-space: nowrap; }
+.chart .val { position: absolute; left: calc(var(--w) + var(--l, 0%) + 8px); top: 0; line-height: 18px; font-family: var(--mono); font-size: 12px; white-space: nowrap; z-index: 1; }
+.chart .axis { display: grid; grid-template-columns: minmax(130px, 38%) minmax(0, 1fr); gap: 12px; font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 4px; }
+.chart .axis div { display: flex; justify-content: space-between; border-top: 1px solid var(--ink); padding-top: 4px; }
+
+/* Media */
+.media { margin-top: 40px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; }
+.media figure { margin: 0; }
+.shot { display: block; width: 100%; padding: 0; border: 1px solid var(--ink); background: var(--fill); cursor: zoom-in; position: relative; overflow: hidden; }
+.shot img { width: 100%; height: 100%; object-fit: cover; object-position: top left; transition: transform 0.5s var(--ease); }
+.shot:hover img { transform: scale(1.015); }
+.shot:focus-visible { outline-offset: 2px; }
+.vid { border: 1px solid var(--ink); background: #0B0C0E; aspect-ratio: 16 / 9; }
+.vid video { width: 100%; height: 100%; object-fit: contain; }
+.w12 { grid-column: span 12; } .w3 { grid-column: span 3; } .w8 { grid-column: span 8; } .w7 { grid-column: span 7; } .w6 { grid-column: span 6; } .w5 { grid-column: span 5; } .w4 { grid-column: span 4; }
+.r-wide { aspect-ratio: 16 / 10; } .r-tall { aspect-ratio: 3 / 4; } .r-phone { aspect-ratio: 375 / 812; }
+.reserved {
+  border: 1px dashed var(--muted); aspect-ratio: 16 / 9; display: grid; place-items: center; text-align: center; padding: 20px;
+  background: repeating-linear-gradient(-45deg, var(--hatch) 0 1px, transparent 1px 9px);
+}
+.reserved p { margin: 0 auto; font-size: 14px; color: var(--ink-2); background: var(--paper); padding: 8px 12px; max-width: 34ch; }
+
+.inrec h4 { font-size: 14px; margin: 0 0 10px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+.inrec ol { margin: 0; padding-left: 1.3em; font-size: 14px; color: var(--ink-2); }
+.inrec li { margin-bottom: 8px; padding-left: 4px; }
+.inrec li::marker { font-family: var(--mono); color: var(--muted); font-size: 12px; }
+.more { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; background: var(--ink); color: var(--paper);
+  font-weight: 650; font-size: 14.5px; text-decoration: none; border: 1px solid var(--ink); transition: background 0.15s, color 0.15s;
+}
+.btn:hover { background: var(--red); border-color: var(--red); color: var(--on-red); }
+.btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+.more .note { font-size: 13.5px; color: var(--muted); margin: 0; }
+
+/* Ordering */
+.order { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; }
+.contact-name { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 900; font-variation-settings: "wdth" 62; text-transform: uppercase; line-height: 0.95; margin: 4px 0 14px; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--red); color: var(--on-red); }
+.btn.ghost svg, .btn svg.fillicon { fill: currentColor; stroke: none; }
+.notes { list-style: none; padding: 0; margin: 0; font-size: 14.5px; }
+.notes li { padding: 10px 0; border-top: 1px solid var(--rule); color: var(--ink-2); }
+.notes li:last-child { border-bottom: 1px solid var(--rule); }
+
+/* Lightbox */
+dialog.lb { border: 0; padding: 0; max-width: min(1400px, 94vw); max-height: 94vh; background: var(--paper); color: var(--ink); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); }
+dialog.lb::backdrop { background: rgba(10, 11, 13, 0.82); }
+dialog.lb img { max-height: calc(94vh - 64px); width: auto; margin: 0 auto; }
+dialog.lb .bar { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--rule); font-size: 13.5px; }
+dialog.lb button { font: 600 13px var(--sans); background: var(--ink); color: var(--paper); border: 0; height: 36px; padding: 0 14px; cursor: pointer; flex: none; }
+dialog.lb button:hover { background: var(--red); color: var(--on-red); }
+dialog.lb[open] { animation: lbIn 0.32s var(--ease); }
+@keyframes lbIn { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* Motion states (applied by script only) */
+.js .pre-chain > li + li::before { transform: scaleX(0); }
+.js .pre-chain > li + li::after { opacity: 0; }
+.js .pre-chain .node { clip-path: inset(0 100% 0 0); }
+.chain > li + li::before, .chain > li + li::after { transition: transform 0.38s var(--ease) var(--d, 0s), opacity 0.1s linear calc(var(--d, 0s) + 0.3s); }
+.chain .node { transition: clip-path 0.5s var(--ease) var(--d, 0s), border-color 0.2s, box-shadow 0.2s; }
+.js .pre-bars .bar { transform: scaleX(0); }
+.chart .bar { transition: transform 0.9s var(--ease) var(--d, 0s); }
+.js .pre-rule { transform: scaleX(0); }
+.proj-h, .sec-h { position: relative; }
+.rule-draw { height: 2px; background: var(--ink); transform-origin: left center; transition: transform 0.7s var(--ease); margin-bottom: 18px; }
+
+/* Responsive */
+@media (max-width: 1080px) {
+  .front-cols { grid-template-columns: 1fr; }
+  .front-cols > div:first-child { padding-right: 0; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .front-cols > div:last-child { padding-left: 0; }
+  .proj-body { grid-template-columns: 1fr; }
+  .chain { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .chain > li + li::before, .chain > li + li::after { display: none; }
+  .chain > li .node { border-top-width: 3px; }
+}
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .runhead .where { display: none; }
+  .runhead nav .lbl { display: none; }
+  .runhead nav .theme { min-width: 0; }
+  .titleblock { grid-template-columns: 1fr; gap: 22px; }
+  .status { min-width: 0; }
+  .roles { font-size: 16px; }
+  .apps { columns: 1; }
+  .toc { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; }
+  .proj-h { grid-template-columns: auto minmax(0, 1fr); }
+  .proj-h .st { grid-column: 1 / -1; text-align: left; max-width: none; }
+  .chain { grid-template-columns: 1fr; gap: 0; }
+  .chain > li .node { border-top-width: 1px; }
+  .chain > li + li { padding-top: 22px; }
+  .chain > li + li::before { display: block; left: 22px; top: 0; width: 1.5px; height: 22px; transform-origin: center top; }
+  .chain > li + li::after { display: block; left: 18px; top: 13px; border: 4.5px solid transparent; border-top: 6px solid var(--ink); border-left-color: transparent; }
+  .js .pre-chain > li + li::before { transform: scaleY(0); }
+  .media { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .media > * { grid-column: 1 / -1 !important; }
+  .media > .w3 { grid-column: span 1 !important; }
+  .order { grid-template-columns: 1fr; gap: 30px; }
+  .fbd { padding: 12px 10px 10px; }
+  .legend { display: flex; }
+  .chart .row, .chart .axis { grid-template-columns: 1fr; gap: 4px; }
+  .chart .axis > span { display: none; }
+  .pagefoot { flex-direction: column; gap: 2px; }
+  th, td { padding: 8px 9px; }
+}
+@media (max-width: 640px) {
+  .cmp thead { display: none; }
+  .cmp, .cmp tbody, .cmp tr, .cmp td { display: block; width: 100%; }
+  .cmp tr { padding: 12px 0; border-top: 1px solid var(--rule); }
+  .cmp tbody tr:first-child { border-top: 0; }
+  .cmp td { border: 0; padding: 2px 0; display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 10px; text-align: left; white-space: normal; }
+  .cmp td::before { content: attr(data-label); font: 600 11.5px var(--sans); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+  .cmp td.num { text-align: left; }
+  .cmp caption { display: block; width: 100%; padding: 0 0 10px; }
+  .tbl-wrap:has(.cmp) { overflow: visible; }
+  .spec thead tr, .spec tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; }
+  .spec tbody tr { border-top: 1px solid var(--rule); }
+  .spec tbody tr:first-child { border-top: 0; }
+  .spec th, .spec td { display: block; border-top: 0; }
+  .spec th:nth-child(2) { display: none; }
+  .spec td:nth-child(1) { grid-column: 1; grid-row: 1; padding-bottom: 2px; }
+  .spec td.cond { grid-column: 1; grid-row: 2; padding-top: 0; }
+  .spec td.num { grid-column: 2; grid-row: 1; }
+  .spec td.unit { grid-column: 3; grid-row: 1; }
+  .spec td.cond:empty { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  .js .pre-chain > li + li::before, .js .pre-bars .bar, .js .pre-rule { transform: none; }
+  .js .pre-chain > li + li::after { opacity: 1; }
+  .js .pre-chain .node { clip-path: none; }
+}
+@media print {
+  .runhead, .skip, dialog { display: none !important; }
+  .sheet { break-before: page; padding-top: 0; }
+  .vid, .reserved { display: none; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="runhead">
+  <div class="in">
+    <a class="mark" href="#top" aria-label="Mahmoud Fansa, back to top"><i aria-hidden="true"></i>MAHMOUD FANSA</a>
+    <div class="where" aria-hidden="true"><span id="where">MF-AI6 Agentic Systems · Rev 2026.10</span></div>
+    <nav aria-label="Primary">
+      <a href="#contents"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v1.5H2zM2 7.25h12v1.5H2zM2 11.5h8v1.5H2z"/></svg><span class="lbl">Contents</span></a>
+      <a href="https://www.linkedin.com/in/mahmoud-fansa" target="_blank" rel="noopener" aria-label="LinkedIn profile (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg><span class="lbl">LinkedIn</span></a>
+      <a href="https://github.com/Fansaz" target="_blank" rel="noopener" aria-label="GitHub profile (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.82-.26.82-.57v-2.04c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .3"/></svg><span class="lbl">GitHub</span></a>
+      <button class="theme" type="button" id="theme" aria-label="Colour theme: follows system. Activate to change.">Auto</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- Page 1 -->
+<section class="sheet front" id="top" data-where="Page 1 · Overview">
+  <div class="heavy" id="heavy"></div>
+  <div class="titleblock">
+    <div>
+      <h1 id="name">Mahmoud Fansa</h1>
+      <p class="roles"><span>Computer Science Specialist</span><span>Network Security Specialist + Web APP Penetration Tester</span><span>Agentic AI Bot Builder</span></p>
+    </div>
+    <dl class="status" aria-label="Document status">
+      <div><dt>AGENTIC SYSTEMS PORTFOLIO</dt><dd></dd></div>
+      <div><dt>Document</dt><dd>MF-AI6</dd></div>
+      <div><dt>Revision</dt><dd>2026.10</dd></div>
+      <div><dt>Systems documented</dt><dd>6</dd></div>
+      <div><dt>Figures as read</dt><dd>5 Oct 2026</dd></div>
+    </dl>
+  </div>
+
+  <div class="front-cols">
+    <div>
+      <h2 class="sec-h" id="features"><span class="n">1</span>Features</h2>
+      <ul class="feat">
+        <li>Voice agent on a real phone line that screens for medical emergencies and books onto a live calendar</li>
+        <li>Cold email system that has delivered 3,393 emails unattended at a 0.70% bounce rate</li>
+        <li>Live event app load-tested at 100 concurrent guests: 100 pages built, nobody turned away</li>
+        <li>DM setter replying in 3.4 s on average, with double booking made impossible by the database</li>
+        <li>Security habits built in: scoped tokens, secrets kept out of agent config, guards that fail closed</li>
+        <li>Every system documented with what broke, why, and how it was fixed</li>
+      </ul>
+      <h2 class="sec-h" id="applications"><span class="n">2</span>Applications</h2>
+      <ul class="apps">
+        <li>Inbound call handling</li>
+        <li>Outbound email</li>
+        <li>Lead qualification</li>
+        <li>Appointment booking</li>
+        <li>Live event tooling</li>
+        <li>Knowledge retrieval</li>
+        <li>Agent guardrails</li>
+        <li>Deployment and operations</li>
+      </ul>
+    </div>
+    <div class="desc">
+      <h2 class="sec-h" id="description"><span class="n">3</span>Description</h2>
+      <p>Mahmoud Fansa builds AI agents that do real work on real systems: phone lines, mailboxes, calendars and CRMs. His background is computer science and network security, including web application penetration testing, and it shows in how the agents are put together. Credentials are scoped to the job, isolation is enforced in code rather than requested in a prompt, and changes ship behind tests with a way back.</p>
+      <p>This document covers six systems. Each section gives the signal chain, measured characteristics, and an errata list of what failed and how it was fixed.</p>
+      <figure class="fbd" id="fbd">
+        <svg id="fbd-svg" role="group" aria-label="Functional block diagram of six systems and the shared services they connect to"></svg>
+        <div class="legend" id="fbd-legend" aria-hidden="true"><span><b>GHL</b> GoHighLevel API</span><span><b>HRM</b> Hermes agent runtime</span><span><b>PG</b> Postgres or Supabase</span><span><b>EDGE</b> Cloudflare, Traefik, Netlify</span></div>
+        <figcaption><b>Figure 1-1. Functional block diagram.</b> Each system on the left, the shared services it connects to on the right. Hover or focus a system to trace its connections; select it to open its section.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 1</span></div>
+</section>
+
+<!-- Page 2 -->
+<section class="sheet" id="contents" data-where="Page 2 · Contents">
+  <div class="rule-draw"></div>
+  <h2 class="sec-h">Table of Contents</h2>
+  <ol class="toc">
+    <li><a href="#features"><span class="n">1</span>Features<span class="lead"></span><span class="pg">1</span></a></li>
+    <li><a href="#applications"><span class="n">2</span>Applications<span class="lead"></span><span class="pg">1</span></a></li>
+    <li><a href="#description"><span class="n">3</span>Description<span class="lead"></span><span class="pg">1</span></a></li>
+    <li><a href="#compare"><span class="n">4</span>Device comparison<span class="lead"></span><span class="pg">2</span></a></li>
+    <li><a href="#mf01"><span class="n">5</span>Ava, AI voice receptionist<span class="lead"></span><span class="pg">3</span></a></li>
+    <li><a href="#mf02"><span class="n">6</span>ColdOutbounder<span class="lead"></span><span class="pg">4</span></a></li>
+    <li><a href="#mf03"><span class="n">7</span>Harbor &amp; Pine DM setter<span class="lead"></span><span class="pg">5</span></a></li>
+    <li><a href="#mf04"><span class="n">8</span>Funnel Studio<span class="lead"></span><span class="pg">6</span></a></li>
+    <li><a href="#mf05"><span class="n">9</span>Reschedule guardrails<span class="lead"></span><span class="pg">7</span></a></li>
+    <li><a href="#mf06"><span class="n">10</span>Knowledge base agent<span class="lead"></span><span class="pg">8</span></a></li>
+    <li><a href="#ordering"><span class="n">11</span>Ordering information<span class="lead"></span><span class="pg">9</span></a></li>
+    <li><a href="#notes"><span class="n">12</span>Notes on the data<span class="lead"></span><span class="pg">9</span></a></li>
+    <li><a href="#revisions"><span class="n">13</span>Revision history<span class="lead"></span><span class="pg">9</span></a></li>
+  </ol>
+
+  <h2 class="sec-h" id="compare" style="margin-top:48px"><span class="n">4</span>Device Comparison</h2>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <caption>Table 4-1. The six systems side by side. Select a system name to open its section.</caption>
+      <thead><tr><th scope="col">Part</th><th scope="col">System</th><th scope="col">Input</th><th scope="col">Core stack</th><th scope="col">Status</th><th scope="col" class="num">Key figure</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Part">MF-01 VOX</td><td data-label="System"><a href="#mf01">Ava, AI voice receptionist</a></td><td data-label="Input">Phone</td><td data-label="Core stack">ElevenLabs, Cloudflare Workers, GoHighLevel, Twilio</td><td data-label="Status">Working on a real phone line</td><td data-label="Key figure" class="k num">4 services, 3 safety checks</td></tr>
+        <tr><td data-label="Part">MF-02 OUT</td><td data-label="System"><a href="#mf02">ColdOutbounder</a></td><td data-label="Input">Email</td><td data-label="Core stack">Postgres 17, Python, Instantly, Apollo, GoHighLevel</td><td data-label="Status">Running unattended</td><td data-label="Key figure" class="k num">3,393 sent, 0.70% bounce</td></tr>
+        <tr><td data-label="Part">MF-03 DMS</td><td data-label="System"><a href="#mf03">Harbor &amp; Pine DM setter</a></td><td data-label="Input">Instagram DM</td><td data-label="Core stack">Hermes, FastAPI, Postgres + pgvector, React</td><td data-label="Status">Live demo, mock data</td><td data-label="Key figure" class="k num">3.4 s average reply</td></tr>
+        <tr><td data-label="Part">MF-04 FUN</td><td data-label="System"><a href="#mf04">Funnel Studio</a></td><td data-label="Input">QR code, web</td><td data-label="Core stack">Hermes, Node, React, Traefik, Netlify</td><td data-label="Status">Load-tested, two deployments</td><td data-label="Key figure" class="k num">100 of 100 guests</td></tr>
+        <tr><td data-label="Part">MF-05 RSV</td><td data-label="System"><a href="#mf05">Reschedule guardrails</a></td><td data-label="Input">SMS</td><td data-label="Core stack">Hermes, GoHighLevel, Supabase, ShopMonkey API</td><td data-label="Status">Validated against live system</td><td data-label="Key figure" class="k num">9 of 9 tests</td></tr>
+        <tr><td data-label="Part">MF-06 KB</td><td data-label="System"><a href="#mf06">Knowledge base agent</a></td><td data-label="Input">Telegram</td><td data-label="Core stack">OpenClaw, Supabase Storage and tables</td><td data-label="Status">Personal build</td><td data-label="Key figure" class="k num">31 MB PDF ingested</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 2</span></div>
+</section>
+
+<!-- MF-01 -->
+<section class="sheet" id="mf01" data-where="5 · MF-01 VOX · Ava, AI voice receptionist">
+  <div class="rule-draw"></div>
+  <header class="proj-h">
+    <span class="n">5</span>
+    <h2>Ava, AI voice receptionist<span class="code"><span class="mono">MF-01 VOX</span> · dental surgery practice, client anonymized</span></h2>
+    <p class="st"><b>Status.</b> Working end to end on a real phone line. Sandbox CRM, synthetic patient data.</p>
+  </header>
+  <div class="proj-body">
+    <div class="overview">
+      <h3 class="sub-h"><span class="n">5.1</span>Overview</h3>
+      <p>Answers a dental surgery practice's inbound calls, screens callers for medical emergencies, books qualified callers onto the live practice calendar, and hands off to a person on request. Before the build the practice answered 45% of its calls.</p>
+      <p>A small Cloudflare Worker sits between the voice platform and the CRM. Booking needs two dependent API calls, which a voice tool cannot chain reliably, and the CRM token should never live in the voice platform's config. The Worker does the sequencing, retries and error classification where it can be tested.</p>
+      <ul class="stack" aria-label="Stack"><li>ElevenLabs Agents</li><li>Gemini 2.5 Flash Lite</li><li>Cloudflare Workers + KV</li><li>GoHighLevel API v2</li><li>Twilio</li></ul>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">5.2</span>Electrical characteristics</h3>
+      <div class="tbl-wrap">
+        <table class="spec">
+          <thead><tr><th scope="col">Parameter</th><th scope="col">Conditions</th><th scope="col" class="num">Typ</th><th scope="col">Unit</th></tr></thead>
+          <tbody>
+            <tr><td>Calls answered before the build</td><td class="cond">Practice baseline</td><td class="num" data-count="45">45</td><td class="unit">%</td></tr>
+            <tr><td>Revenue lost to missed calls</td><td class="cond">Practice's own estimate</td><td class="num">~730k</td><td class="unit">USD/yr</td></tr>
+            <tr><td>Services handled</td><td class="cond">Everything else is declined, not booked</td><td class="num" data-count="4">4</td><td class="unit"></td></tr>
+            <tr><td>Red-flag safety questions</td><td class="cond">Consolidated from 7</td><td class="num" data-count="3">3</td><td class="unit"></td></tr>
+            <tr><td>Middleware size</td><td class="cond">One Worker, no database</td><td class="num">~350</td><td class="unit">lines</td></tr>
+            <tr><td>Silent retries on upstream failure</td><td class="cond">Real slot conflicts skip retries</td><td class="num" data-count="2">2</td><td class="unit"></td></tr>
+            <tr><td>Failure log retention</td><td class="cond">Cloudflare KV, queryable</td><td class="num" data-count="30">30</td><td class="unit">days</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-h"><span class="n">5.3</span>Signal chain</h3>
+  <ol class="chain">
+    <li><div class="node"><b>Caller</b><small>Twilio toll-free number</small></div></li>
+    <li><div class="node"><b>Ava</b><small>ElevenLabs STT, Gemini, TTS</small></div></li>
+    <li><div class="node"><b>Worker</b><small>Cloudflare, retries, KV log</small></div></li>
+    <li><div class="node"><b>GoHighLevel</b><small>free slots, contact, appointment</small></div></li>
+    <li><div class="node"><b>Workflow</b><small>confirmation and reminder SMS</small></div></li>
+  </ol>
+  <ul class="exits" aria-label="Exits from the voice agent">
+    <li><span><b>Red flag:</b> caller told to call 911, scheduling stops for the rest of the call</span></li>
+    <li><span><b>Out of scope:</b> politely declined</span></li>
+    <li><span><b>Asks for a person:</b> live transfer at any step</span></li>
+  </ul>
+
+  <div class="proj-body">
+    <div>
+      <h3 class="sub-h"><span class="n">5.4</span>Errata</h3>
+      <ol class="errata">
+        <li><span class="id">E1</span><div><h4>The agent read its own reasoning aloud</h4><p><b>Cause.</b> The model emitted its chain of thought inline, and the platform passes custom model output through untouched.</p><p><b>Fix.</b> Moved to a natively integrated model the platform controls, which is also on the HIPAA-eligible list.</p></div></li>
+        <li><span class="id">E2</span><div><h4>Every booking failed as "slot unavailable"</h4><p><b>Cause.</b> The tool's enum values had never saved, so the agent sent a stale service key, and the Worker labelled every HTTP 400 a conflict.</p><p><b>Fix.</b> Corrected the enum, then classified errors by what the upstream message actually says.</p></div></li>
+        <li><span class="id">E3</span><div><h4>Asked for a service the caller had already named</h4><p><b>Cause.</b> Call flow rules were spread across three distant prompt sections.</p><p><b>Fix.</b> One ordered call flow at the top of the prompt, with the "never ask again" rule placed at the exact step where it failed.</p></div></li>
+        <li><span class="id">E4</span><div><h4>An emergency flag did not stick</h4><p><b>Cause.</b> After a red flag, an unrelated reply sent the agent back to booking.</p><p><b>Fix.</b> The emergency state now persists for the rest of the call, and business rules are written as subordinate to safety.</p></div></li>
+      </ol>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">5.5</span>Recordings</h3>
+      <figure>
+        <div class="vid"><video controls preload="none" playsinline poster="assets/posters/voice-call.jpg"><source src="ElevenLabs%20AI%20voice%20Agent%20setup%20%2B%20GHL%20calendar%20booking.mp4" type="video/mp4"></video></div>
+        <figcaption><b>Figure 5-1.</b> Agent setup and a test call through safety screening to a calendar booking. 5:15</figcaption>
+      </figure>
+      <figure style="margin-top:20px">
+        <div class="vid"><video controls preload="none" playsinline poster="assets/posters/voice-setup.jpg"><source src="AI%20Voice%20Agent%20ElevenLabs%20setup%20walkthrough.mp4" type="video/mp4"></video></div>
+        <figcaption><b>Figure 5-2.</b> Walkthrough of the agent's prompt, voice, model and knowledge base. 3:38</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="more">
+    <a class="btn" href="Dental%20AI%20Voice%20Agent/case-study.html">Read the full case study<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4"/></svg></a>
+    <p class="note">Covers the safety model, six engineering problems, and what was left out of scope on purpose.</p>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 3</span></div>
+</section>
+
+<!-- MF-02 -->
+<section class="sheet" id="mf02" data-where="6 · MF-02 OUT · ColdOutbounder">
+  <div class="rule-draw"></div>
+  <header class="proj-h">
+    <span class="n">6</span>
+    <h2>ColdOutbounder<span class="code"><span class="mono">MF-02 OUT</span> · autonomous cold email for dental practices</span></h2>
+    <p class="st"><b>Status.</b> Running unattended on a VPS. Figures read from the live system on 5 Oct 2026.</p>
+  </header>
+  <div class="proj-body">
+    <div class="overview">
+      <h3 class="sub-h"><span class="n">6.1</span>Overview</h3>
+      <p>A two-person agency needed outbound that runs without anyone watching it. The system finds independent dental practices, writes personalised sequences, sends from six warmed mailboxes, classifies every reply, and routes genuine interest into the CRM while suppressing anyone who asks to be left alone.</p>
+      <p>A Postgres state machine is the spine. Instantly knows what it sent; Postgres knows what that meant and what happens next. A reconciler reads Instantly's records every ten minutes and repairs any drift, so the two never disagree silently.</p>
+      <ul class="stack" aria-label="Stack"><li>PostgreSQL 17</li><li>Python 3.13</li><li>Docker + s6</li><li>Instantly API v2</li><li>Apollo</li><li>GoHighLevel v2</li><li>FastAPI</li></ul>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">6.2</span>Electrical characteristics</h3>
+      <div class="tbl-wrap">
+        <table class="spec">
+          <thead><tr><th scope="col">Parameter</th><th scope="col">Conditions</th><th scope="col" class="num">Typ</th><th scope="col">Unit</th></tr></thead>
+          <tbody>
+            <tr><td>Emails delivered</td><td class="cond">Live reading, 5 Oct 2026</td><td class="num" data-count="3393">3,393</td><td class="unit"></td></tr>
+            <tr><td>Leads in sequence</td><td class="cond">Two A/B copy variants</td><td class="num" data-count="862">862</td><td class="unit"></td></tr>
+            <tr><td>Bounce rate</td><td class="cond">Auto-pause threshold 3.00%</td><td class="num" data-count="0.70" data-dec="2">0.70</td><td class="unit">%</td></tr>
+            <tr><td>Open rate</td><td class="cond">Unique opens over contacted</td><td class="num" data-count="25.6" data-dec="1">25.6</td><td class="unit">%</td></tr>
+            <tr><td>Sequence length</td><td class="cond">Over 64 days, weekday window</td><td class="num" data-count="9">9</td><td class="unit">emails</td></tr>
+            <tr><td>Warmed mailboxes</td><td class="cond">Across two domains</td><td class="num" data-count="6">6</td><td class="unit"></td></tr>
+            <tr><td>Postgres tables</td><td class="cond">14 migrations</td><td class="num" data-count="19">19</td><td class="unit"></td></tr>
+            <tr><td>Reply classifier tests</td><td class="cond">Refusal and interest, both directions</td><td class="num" data-count="43">43</td><td class="unit"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-h"><span class="n">6.3</span>Signal chain</h3>
+  <ol class="chain">
+    <li><div class="node"><b>Discover</b><small>Apollo, independent practices</small></div></li>
+    <li><div class="node"><b>Qualify</b><small>email domain must match company</small></div></li>
+    <li><div class="node"><b>Send</b><small>Instantly, paced per mailbox</small></div></li>
+    <li><div class="node"><b>Classify</b><small>opt-out, bounce, objection, interest</small></div></li>
+    <li><div class="node"><b>Route</b><small>GoHighLevel opportunity or Slack</small></div></li>
+  </ol>
+
+  <div class="proj-body">
+    <div>
+      <h3 class="sub-h"><span class="n">6.4</span>Errata</h3>
+      <ol class="errata">
+        <li><span class="id">E1</span><div><h4>842 leads frozen since upload</h4><p><b>Cause.</b> The campaign lookup only matched keys ending in varA or varB; live keys ended in a date, so their leads never left the queue while Instantly emailed them for weeks.</p><p><b>Fix.</b> Fixed the match, backfilled 536 records, and added the reconciler so state repairs itself.</p></div></li>
+        <li><span class="id">E2</span><div><h4>"Not interested" read as a buying signal</h4><p><b>Cause.</b> The classifier's pattern for interested also matches inside the refusal.</p><p><b>Fix.</b> Explicit precedence, refusal tested before interest, and 43 tests pinning both directions.</p></div></li>
+        <li><span class="id">E3</span><div><h4>Every reply silently discarded</h4><p><b>Cause.</b> Replies were matched to leads by the To address, which on a reply is our own mailbox.</p><p><b>Fix.</b> Found by checking a real opt-out instead of trusting a green cron status.</p></div></li>
+        <li><span class="id">E4</span><div><h4>Opt-outs recorded, then ignored</h4><p><b>Cause.</b> The suppression table had one INSERT and no SELECT anywhere, and the stop call pointed at an endpoint that returns 404.</p><p><b>Fix.</b> Uploads now read the list, and stopping uses a blocklist entry verified to work.</p></div></li>
+        <li><span class="id">E5</span><div><h4>One email in eight named the wrong business</h4><p><b>Cause.</b> The lead source had attached contacts to companies they did not work for.</p><p><b>Fix.</b> A corroboration check on email domain against company name, with a generic phrase when it fails.</p></div></li>
+      </ol>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">6.5</span>Dashboard</h3>
+      <div class="media" style="margin-top:0">
+        <figure class="w12"><button class="shot r-wide" type="button" data-full="assets/img/cold-1.jpg" data-cap="Figure 6-1. Read-only dashboard: date range, metrics, daily sends and the A/B split."><img src="assets/img/cold-1.jpg" alt="ColdOutbounder dashboard with a date range filter, metric tiles, a daily send chart and an A/B split table" loading="lazy" width="800" height="800"></button><figcaption><b>Figure 6-1.</b> Read-only dashboard. It observes the pipeline and never commands it.</figcaption></figure>
+        <figure class="w6"><button class="shot r-wide" type="button" data-full="assets/img/cold-2.jpg" data-cap="Figure 6-2. Campaign comparison, sequence schedule and sending capacity."><img src="assets/img/cold-2.jpg" alt="Campaign comparison table, sequence and schedule panel, and sending capacity breakdown" loading="lazy"></button><figcaption><b>Figure 6-2.</b> Capacity shown as a calculation.</figcaption></figure>
+        <figure class="w6"><button class="shot r-wide" type="button" data-full="assets/img/cold-3.jpg" data-cap="Figure 6-3. Replies, CRM pipeline counts, the auto-pause governor and job health."><img src="assets/img/cold-3.jpg" alt="Replies panel, pipeline counts, governor table and scheduled job health" loading="lazy"></button><figcaption><b>Figure 6-3.</b> Health next to the numbers.</figcaption></figure>
+      </div>
+    </div>
+  </div>
+  <div class="more">
+    <a class="btn" href="Cold%20Email%20agent/coldoutbounder-case-study.html">Read the full case study<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4"/></svg></a>
+    <p class="note">Includes the working-safely habits used while it was sending to real practices.</p>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 4</span></div>
+</section>
+
+<!-- MF-03 -->
+<section class="sheet" id="mf03" data-where="7 · MF-03 DMS · Harbor & Pine DM setter">
+  <div class="rule-draw"></div>
+  <header class="proj-h">
+    <span class="n">7</span>
+    <h2>Harbor &amp; Pine DM setter<span class="code"><span class="mono">MF-03 DMS</span> · AI setter that books its own appointments</span></h2>
+    <p class="st"><b>Status.</b> Live end to end. Harbor &amp; Pine is a fictional agency; every lead and booking is mock data.</p>
+  </header>
+  <div class="proj-body">
+    <div class="overview">
+      <h3 class="sub-h"><span class="n">7.1</span>Overview</h3>
+      <p>A lead sends a DM. The setter qualifies them against a five-document knowledge base, offers live calendar slots, and books the consultation while the CRM fills in beside the conversation.</p>
+      <p>The brief said the agent was already connected to a CRM and a database. A read-only audit found the integrations had never been saved, the CRM token could not create appointments, the database had zero tables, nothing could reach the agent over HTTPS, and a previous bot was still live. Rather than patch five problems in someone else's CRM, the CRM itself was built in Postgres.</p>
+      <ul class="stack" aria-label="Stack"><li>Hermes · MiniMax-M3</li><li>FastAPI + WebSocket</li><li>Postgres 16 + pgvector</li><li>bge-small embeddings</li><li>React 18</li><li>Traefik</li><li>Netlify</li></ul>
+      <div class="chart" role="img" aria-label="Reply latency by path: agent CLI subprocess about 9.3 seconds, agent loop over HTTP 7 to 33 seconds, direct model call 2.3 seconds">
+        <div class="row"><span>Agent CLI subprocess</span><div class="track"><div class="bar" style="--w:28.2%"></div><span class="val" style="--w:28.2%">~9.3 s</span></div></div>
+        <div class="row"><span>Agent loop over HTTP</span><div class="track"><div class="bar range" style="--l:21.2%;--w:78.8%;--d:0.12s"><span>7 to 33 s</span></div></div></div>
+        <div class="row"><span>Direct model call</span><div class="track"><div class="bar best" style="--w:7%"></div><span class="val" style="--w:7%">2.3 s</span></div></div>
+        <div class="axis"><span></span><div><span>0</span><span>11 s</span><span>22 s</span><span>33 s</span></div></div>
+        <figcaption><b>Figure 7-1. Reply latency by path.</b> Agent loop over HTTP ranged 7 to 33 s. The direct call keeps the same persona files; the slower path remains as a fallback.</figcaption>
+      </div>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">7.2</span>Electrical characteristics</h3>
+      <div class="tbl-wrap">
+        <table class="spec">
+          <thead><tr><th scope="col">Parameter</th><th scope="col">Conditions</th><th scope="col" class="num">Typ</th><th scope="col">Unit</th></tr></thead>
+          <tbody>
+            <tr><td>Reply time</td><td class="cond">Average, measured end to end</td><td class="num" data-count="3.4" data-dec="1">3.4</td><td class="unit">s</td></tr>
+            <tr><td>Input tokens per reply</td><td class="cond">Was 30k to 47k in the agent loop</td><td class="num">3.5k</td><td class="unit">tokens</td></tr>
+            <tr><td>Postgres tables</td><td class="cond">Replacing the external CRM</td><td class="num" data-count="15">15</td><td class="unit"></td></tr>
+            <tr><td>Bookable slots</td><td class="cond">Generated from calendar rules</td><td class="num" data-count="332">332</td><td class="unit"></td></tr>
+            <tr><td>Fields extracted</td><td class="cond">Captured run, from ordinary replies</td><td class="num" data-count="12">12</td><td class="unit"></td></tr>
+            <tr><td>Third-party CRM dependencies</td><td class="cond"></td><td class="num" data-count="0">0</td><td class="unit"></td></tr>
+            <tr><td>Interface bundle</td><td class="cond">Hand-written CSS</td><td class="num" data-count="50">50</td><td class="unit">KB gz</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-h"><span class="n">7.3</span>Signal chain</h3>
+  <ol class="chain">
+    <li><div class="node"><b>Lead DM</b><small>row written, unhandled</small></div></li>
+    <li><div class="node"><b>Worker</b><small>lead, history, open slots</small></div></li>
+    <li><div class="node"><b>Retrieval</b><small>vectors fused with full text</small></div></li>
+    <li><div class="node"><b>Ava decides</b><small>one call, one JSON decision</small></div></li>
+    <li><div class="node"><b>Postgres</b><small>fields, tags, stage, booking</small></div></li>
+    <li><div class="node"><b>Interface</b><small>WebSocket broadcast</small></div></li>
+  </ol>
+
+  <div class="proj-body">
+    <div>
+      <h3 class="sub-h"><span class="n">7.4</span>Errata</h3>
+      <ol class="errata">
+        <li><span class="id">E1</span><div><h4>Replies took about nine seconds</h4><p><b>Cause.</b> Spawning the agent CLI cost 2.8 s before inference, and the agent loop inflated a 1,700-token prompt to 30k to 47k tokens.</p><p><b>Fix.</b> A direct structured model call per reply, 2.6 times faster, with the same persona files.</p></div></li>
+        <li><span class="id">E2</span><div><h4>Double booking depended on the model remembering</h4><p><b>Cause.</b> Four calendars with their own hosts, buffers, notice windows and closures.</p><p><b>Fix.</b> A Postgres function materialises every legal slot; booking flips one, and a unique constraint makes double booking impossible.</p></div></li>
+        <li><span class="id">E3</span><div><h4>Exact prices missed by vector search</h4><p><b>Cause.</b> "Is it really $2,997?" matches a string, not a concept.</p><p><b>Fix.</b> Vector results fused with Postgres full-text ranking.</p></div></li>
+      </ol>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">7.5</span>Interface</h3>
+      <div class="media" style="margin-top:0">
+        <figure class="w12"><button class="shot r-wide" type="button" data-full="assets/img/dm-1.png" data-cap="Figure 7-2. A finished conversation on the left; contact record, pipeline and calendar filled in by the agent on the right."><img src="assets/img/dm-1.png" alt="Harbor and Pine CRM with a completed DM conversation on the left and the contact record, pipeline and booked consultation on the right" loading="lazy"></button><figcaption><b>Figure 7-2.</b> Nothing on the right was typed by a person.</figcaption></figure>
+        <figure class="w12"><button class="shot" style="aspect-ratio:1728/750" type="button" data-full="assets/img/dm-3.png" data-cap="Figure 7-3. Four calendars; the booked slot leaves availability the moment it is taken."><img src="assets/img/dm-3.png" alt="Calendars panel showing a confirmed growth strategy call and four calendars with open slots" loading="lazy"></button><figcaption><b>Figure 7-3.</b> Four calendars, each with its own host, length and notice window.</figcaption></figure>
+      </div>
+    </div>
+  </div>
+  <div class="more">
+    <a class="btn" href="DM%20Setter%20Demo/dm-setter-case-study.html">Read the full case study<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4"/></svg></a>
+    <p class="note">Covers the audit, the architecture and the message flow step by step.</p>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 5</span></div>
+</section>
+
+<!-- MF-04 -->
+<section class="sheet" id="mf04" data-where="8 · MF-04 FUN · Funnel Studio">
+  <div class="rule-draw"></div>
+  <header class="proj-h">
+    <span class="n">8</span>
+    <h2>Funnel Studio<span class="code"><span class="mono">MF-04 FUN</span> · AI funnel builder for a live event</span></h2>
+    <p class="st"><b>Status.</b> Load-tested with 100 scripted guests. Primary and identical backup deployments.</p>
+  </header>
+  <div class="proj-body">
+    <div class="overview">
+      <h3 class="sub-h"><span class="n">8.1</span>Overview</h3>
+      <p>Guests at a live event scan a QR code, answer four questions in a chat, and leave with their own landing page. It had to hold more than 100 people at once on one venue Wi-Fi, each in a private workspace, with no accounts.</p>
+      <p>The agent has file tools and internet access, so isolation is enforced in code: a plugin in front of every tool call pins each guest to their own folder, allows only the tools the job needs, and blocks the call if its check times out. A second server runs an identical copy as the event's spare.</p>
+      <ul class="stack" aria-label="Stack"><li>Hermes agent + skill</li><li>Node bridge</li><li>React on Netlify</li><li>Traefik</li><li>Docker</li></ul>
+      <div class="chart" role="img" aria-label="Whole room finished for the same 100 guests: 4 at once on 1 core, 32.5 minutes; 10 at once on 2 cores, 12.6 minutes; backup server, 14.0 minutes">
+        <div class="row"><span>4 at once, 1 core</span><div class="track"><div class="bar" style="--w:81.25%"></div><span class="val" style="--w:81.25%">32.5 min</span></div></div>
+        <div class="row"><span>10 at once, 2 cores</span><div class="track"><div class="bar best" style="--w:31.5%;--d:0.12s"></div><span class="val" style="--w:31.5%">12.6 min</span></div></div>
+        <div class="row"><span>Backup server</span><div class="track"><div class="bar" style="--w:35%;--d:0.24s"></div><span class="val" style="--w:35%">14.0 min</span></div></div>
+        <div class="axis"><span></span><div><span>0</span><span>20 min</span><span>40 min</span></div></div>
+        <figcaption><b>Figure 8-1. Whole room finished, same 100 guests.</b> The runtime sized its thread pool from the core count, so raising the app's limit alone queued work where nothing could see it.</figcaption>
+      </div>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">8.2</span>Electrical characteristics</h3>
+      <div class="tbl-wrap">
+        <table class="spec">
+          <thead><tr><th scope="col">Parameter</th><th scope="col">Conditions</th><th scope="col" class="num">Typ</th><th scope="col">Unit</th></tr></thead>
+          <tbody>
+            <tr><td>Guests who got a page</td><td class="cond">100 arriving over 10 min, backup server</td><td class="num">100 / 100</td><td class="unit"></td></tr>
+            <tr><td>Whole room finished</td><td class="cond">Same run</td><td class="num" data-count="14.0" data-dec="1">14.0</td><td class="unit">min</td></tr>
+            <tr><td>Time to a page</td><td class="cond">Typical guest</td><td class="num" data-count="2">2</td><td class="unit">min</td></tr>
+            <tr><td>Agent reply to a question</td><td class="cond">Under full load</td><td class="num">~10</td><td class="unit">s</td></tr>
+            <tr><td>Pages built at once</td><td class="cond">Two cores, 14-thread pool</td><td class="num" data-count="10">10</td><td class="unit"></td></tr>
+            <tr><td>Turned away, failed replies</td><td class="cond"></td><td class="num">0 / 0</td><td class="unit"></td></tr>
+            <tr><td>Model cost</td><td class="cond">Per 100 guests</td><td class="num">~5.80</td><td class="unit">USD</td></tr>
+            <tr><td>Isolation guard tests</td><td class="cond">Run before every install</td><td class="num" data-count="61">61</td><td class="unit"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-h"><span class="n">8.3</span>Signal chain</h3>
+  <ol class="chain">
+    <li><div class="node"><b>Guest</b><small>QR code, no account</small></div></li>
+    <li><div class="node"><b>Web app</b><small>React on Netlify</small></div></li>
+    <li><div class="node"><b>Bridge</b><small>queue, database, files</small></div></li>
+    <li><div class="node"><b>Agent</b><small>Hermes skill, 10 at once</small></div></li>
+    <li><div class="node"><b>Guard</b><small>one folder per guest, fails closed</small></div></li>
+    <li><div class="node"><b>Preview</b><small>own hostname, share, download</small></div></li>
+  </ol>
+
+  <div class="proj-body">
+    <div>
+      <h3 class="sub-h"><span class="n">8.4</span>Errata</h3>
+      <ol class="errata">
+        <li><span class="id">E1</span><div><h4>32 of 100 guests turned away</h4><p><b>Cause.</b> Joining was capped at 12 a minute per connection and the line held 60 messages, while the CPU peaked at 52%.</p><p><b>Fix.</b> 200 joins a minute and a 300-message line. Nobody has been turned away since.</p></div></li>
+        <li><span class="id">E2</span><div><h4>A three-second answer waited six minutes</h4><p><b>Cause.</b> Quick chat replies queued behind minute-long page builds.</p><p><b>Fix.</b> Intake messages got their own lane; reply time fell from 6.2 min to 46 s.</p></div></li>
+        <li><span class="id">E3</span><div><h4>The first fast lane backfired</h4><p><b>Cause.</b> Promoting anything that waited four minutes promoted everything at peak, and the worst reply took 14 minutes.</p><p><b>Fix.</b> Removed the promotion rule. The repeatable test harness is what caught it.</p></div></li>
+        <li><span class="id">E4</span><div><h4>The backup could have deployed over the live site</h4><p><b>Cause.</b> The deploy script trusted a cached site id before looking the site up by name.</p><p><b>Fix.</b> Only the token was copied, and cached ids are now ignored unless the name matches.</p></div></li>
+      </ol>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">8.5</span>Guest journey and recording</h3>
+      <div class="media" style="margin-top:0">
+        <figure class="w12"><button class="shot r-wide" type="button" data-full="assets/img/funnel-4.jpg" data-cap="Figure 8-2. Chat on the left, live preview of the finished page on the right."><img src="assets/img/funnel-4.jpg" alt="Funnel Studio with the agent chat on the left and a bakery landing page preview on the right" loading="lazy"></button><figcaption><b>Figure 8-2.</b> Four answers in, a finished page on the right.</figcaption></figure>
+        <figure class="w6"><button class="shot" style="aspect-ratio:20/21" type="button" data-full="assets/img/funnel-1.png" data-cap="Figure 8-3. One deployment: the browser only reaches the bridge and the preview host; the agent sits on the private network."><img src="assets/img/funnel-1.png" alt="Architecture diagram of one Funnel Studio deployment" loading="lazy" style="object-fit:contain;background:#fff"></button><figcaption><b>Figure 8-3.</b> One deployment.</figcaption></figure>
+        <figure class="w3"><button class="shot r-phone" type="button" data-full="assets/img/funnel-2.jpg" data-cap="Figure 8-4. The join screen after scanning the QR code: no account, no password."><img src="assets/img/funnel-2.jpg" alt="Funnel Studio join screen on a phone" loading="lazy"></button><figcaption><b>Figure 8-4.</b> Join.</figcaption></figure>
+        <figure class="w3"><button class="shot r-phone" type="button" data-full="assets/img/funnel-3.jpg" data-cap="Figure 8-5. The four intake questions, answered one at a time."><img src="assets/img/funnel-3.jpg" alt="The four intake questions in the chat on a phone" loading="lazy"></button><figcaption><b>Figure 8-5.</b> Four questions.</figcaption></figure>
+        <figure class="w12">
+          <div class="vid"><video controls preload="none" playsinline poster="assets/posters/funnel-slack.jpg"><source src="Building%20and%20Hosting%20a%20Funnel%20Builder%20Bot.mp4" type="video/mp4"></video></div>
+          <figcaption><b>Figure 8-6.</b> A funnel builder bot taking a brief over chat, building the page and serving a live preview. 4:13</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+  <div class="more">
+    <a class="btn" href="Funnel%20Demo/Funnel%20Studio.html">Read the full case study<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4"/></svg></a>
+    <p class="note">Covers the style library that keeps 100 pages apart, the backup build and the operating routine.</p>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 6</span></div>
+</section>
+
+<!-- MF-05 -->
+<section class="sheet" id="mf05" data-where="9 · MF-05 RSV · Reschedule guardrails">
+  <div class="rule-draw"></div>
+  <header class="proj-h">
+    <span class="n">9</span>
+    <h2>Reschedule guardrails for a live booking agent<span class="code"><span class="mono">MF-05 RSV</span> · client work, anonymized</span></h2>
+    <p class="st"><b>Status.</b> Built and validated against the client's live scheduling system.</p>
+  </header>
+  <div class="proj-body">
+    <div class="overview">
+      <h3 class="sub-h"><span class="n">9.1</span>Overview</h3>
+      <p>An SMS booking agent for a multi-location auto service business qualified leads and booked them into the shop's scheduling system, but it could only create appointments. The client asked for rescheduling: deposits are non-refundable, but a booking can move.</p>
+      <p>The feature was small. The guardrails were the job. The agent must never touch an appointment a person booked, and must never cancel without a confirmed replacement. Both are enforced by how the code finds and orders its work, not by instructions to the model.</p>
+      <ul class="stack" aria-label="Stack"><li>Hermes agent + booking skill</li><li>GoHighLevel conversations</li><li>Supabase</li><li>ShopMonkey API v3</li></ul>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">9.2</span>Electrical characteristics</h3>
+      <div class="tbl-wrap">
+        <table class="spec">
+          <thead><tr><th scope="col">Parameter</th><th scope="col">Conditions</th><th scope="col" class="num">Typ</th><th scope="col">Unit</th></tr></thead>
+          <tbody>
+            <tr><td>Harness tests passed</td><td class="cond">Against the live scheduling instance</td><td class="num">9 / 9</td><td class="unit"></td></tr>
+            <tr><td>Appointments reachable outside the agent's own records</td><td class="cond">By construction</td><td class="num" data-count="0">0</td><td class="unit"></td></tr>
+            <tr><td>New deposits charged on a move</td><td class="cond">Existing deposit carried over</td><td class="num" data-count="0">0</td><td class="unit"></td></tr>
+            <tr><td>Real appointments touched in testing</td><td class="cond">Throwaway booking, removal confirmed by 404</td><td class="num" data-count="0">0</td><td class="unit"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-h"><span class="n">9.3</span>Signal chain</h3>
+  <ol class="chain">
+    <li><div class="node"><b>Customer SMS</b><small>"can't make my slot"</small></div></li>
+    <li><div class="node"><b>Agent</b><small>states policy, offers openings</small></div></li>
+    <li><div class="node"><b>Bookings table</b><small>only bookings the agent made</small></div></li>
+    <li><div class="node"><b>New slot</b><small>created and confirmed first</small></div></li>
+    <li><div class="node"><b>Old slot</b><small>released only after success</small></div></li>
+  </ol>
+  <ul class="exits" aria-label="Exits">
+    <li><span><b>No booking on record:</b> nothing is touched, the team is told</span></li>
+    <li><span><b>Release fails:</b> new booking kept, team alerted to clean up</span></li>
+  </ul>
+
+  <div class="proj-body">
+    <div>
+      <h3 class="sub-h"><span class="n">9.4</span>Guardrails</h3>
+      <ol class="errata">
+        <li><span class="id">G1</span><div><h4>Only touch what the agent booked</h4><p>The old appointment id is read only from the agent's own bookings table, never from a search of the shop's calendar, so a human booking cannot be reached at all.</p></div></li>
+        <li><span class="id">G2</span><div><h4>Never leave a customer with nothing</h4><p>Create the new appointment, confirm it, then release the old one. If the new booking fails the old one is untouched; if the release fails the customer keeps the new one and the team is alerted.</p></div></li>
+        <li><span class="id">G3</span><div><h4>Carry the deposit</h4><p>The existing booking code consumed a deposit on every booking, so a naive rebook would have demanded a second one. A move reuses the original.</p></div></li>
+        <li><span class="id">G4</span><div><h4>Live skill untouched until approved</h4><p>Built in a dev copy and tested against one throwaway appointment, then a rollout plan: snapshot, swap, prompt change and gateway restart as separate steps, then an end to end check.</p></div></li>
+      </ol>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">9.5</span>Recording</h3>
+      <figure>
+        <div class="vid"><video controls preload="none" playsinline poster="assets/posters/hermes.jpg"><source src="Hermes%20Troubleshooting%20and%20Guardrails.mp4" type="video/mp4"></video></div>
+        <figcaption><b>Figure 9-1.</b> From the client's ticket to a guardrailed plan: investigating how the agent records its bookings, checking the scheduling API, then the test run. 2:46</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 7</span></div>
+</section>
+
+<!-- MF-06 -->
+<section class="sheet" id="mf06" data-where="10 · MF-06 KB · Knowledge base agent">
+  <div class="rule-draw"></div>
+  <header class="proj-h">
+    <span class="n">10</span>
+    <h2>Knowledge base agent<span class="code"><span class="mono">MF-06 KB</span> · OpenClaw on Telegram, backed by Supabase</span></h2>
+    <p class="st"><b>Status.</b> Personal build.</p>
+  </header>
+  <div class="proj-body">
+    <div class="overview">
+      <h3 class="sub-h"><span class="n">10.1</span>Overview</h3>
+      <p>A Telegram agent on OpenClaw that learns from documents kept in Supabase. Before connecting, it asked the questions that decide the design: where documents live, whether to use the service role key or the anon key with row level security, and whether documents belong to one user or are shared.</p>
+      <p>Telegram caps file uploads, so documents go straight into a Supabase Storage bucket instead. The agent fetches each file, extracts the text, writes it into the knowledge base, and answers from it with the source named. The test corpus was security material: a 31 MB Windows Server identity PDF and MIT's Kerberos documentation.</p>
+      <ul class="stack" aria-label="Stack"><li>OpenClaw</li><li>Telegram bot</li><li>Supabase Storage</li><li>Supabase tables</li></ul>
+    </div>
+    <div>
+      <h3 class="sub-h"><span class="n">10.2</span>Electrical characteristics</h3>
+      <div class="tbl-wrap">
+        <table class="spec">
+          <thead><tr><th scope="col">Parameter</th><th scope="col">Conditions</th><th scope="col" class="num">Typ</th><th scope="col">Unit</th></tr></thead>
+          <tbody>
+            <tr><td>Largest document ingested</td><td class="cond">PDF, uploaded via Storage</td><td class="num" data-count="31">31</td><td class="unit">MB</td></tr>
+            <tr><td>Auth options weighed</td><td class="cond">Service role key, or anon key with row level security</td><td class="num" data-count="2">2</td><td class="unit"></td></tr>
+            <tr><td>Answers cite their source</td><td class="cond">Document title in the reply</td><td class="num">yes</td><td class="unit"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <h3 class="sub-h"><span class="n">10.3</span>Signal chain</h3>
+  <ol class="chain">
+    <li><div class="node"><b>Document</b><small>dropped into the Storage bucket</small></div></li>
+    <li><div class="node"><b>Agent</b><small>OpenClaw, fetch and extract text</small></div></li>
+    <li><div class="node"><b>Knowledge base</b><small>rows in a Supabase table</small></div></li>
+    <li><div class="node"><b>Telegram</b><small>answer with the source named</small></div></li>
+  </ol>
+  <div class="media">
+    <figure class="w8">
+      <div class="vid"><video controls preload="none" playsinline poster="assets/posters/openclaw.jpg"><source src="Knowledge%20Base%20OpenClaw%20Agent.mp4" type="video/mp4"></video></div>
+      <figcaption><b>Figure 10-1.</b> Connecting the agent to Supabase, ingesting a 31 MB PDF, then asking about Kerberos. 2:27</figcaption>
+    </figure>
+    <div class="w4 inrec">
+      <h4>In the recording</h4>
+      <ol>
+        <li>The agent asks how documents are stored and how it should authenticate before touching anything.</li>
+        <li>A file too large for Telegram goes into the Storage bucket instead.</li>
+        <li>The 31 MB PDF is fetched, extracted and stored as document one.</li>
+        <li>A question on Kerberos is answered from the stored material, with its source.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 8</span></div>
+</section>
+
+<!-- Page 9 -->
+<section class="sheet" id="ordering" data-where="11 · Ordering information">
+  <div class="rule-draw"></div>
+  <div class="order">
+    <div>
+      <h2 class="sec-h"><span class="n">11</span>Ordering Information</h2>
+      <p class="contact-name">Mahmoud Fansa</p>
+      <p>Computer science and network security specialist, web application penetration tester, and builder of agentic AI systems. Reach him by email or on LinkedIn; the code lives on GitHub.</p>
+      <div class="tbl-wrap" style="margin-top:22px">
+        <table class="ord">
+          <thead><tr><th scope="col">Code</th><th scope="col">Channel</th><th scope="col">Use for</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">LNK-01</td><td><a href="https://www.linkedin.com/in/mahmoud-fansa" target="_blank" rel="noopener">linkedin.com/in/mahmoud-fansa</a></td><td>Messages and roles</td></tr>
+            <tr><td class="mono">EML-01</td><td><a href="mailto:mahmoud.fansa8@gmail.com">mahmoud.fansa8@gmail.com</a></td><td>Email, interviews, roles</td></tr>
+            <tr><td class="mono">GIT-01</td><td><a href="https://github.com/Fansaz" target="_blank" rel="noopener">github.com/Fansaz</a></td><td>Code</td></tr>
+            <tr><td class="mono">DOC-01</td><td><a href="#mf01">Sections 5 to 10</a></td><td>Project write-ups</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="links">
+        <a class="btn" href="mailto:mahmoud.fansa8@gmail.com"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5h12v9H2zM2 4l6 5 6-5"/></svg>Email Mahmoud</a>
+        <a class="btn ghost" href="https://www.linkedin.com/in/mahmoud-fansa" target="_blank" rel="noopener"><svg class="fillicon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>Message on LinkedIn</a>
+        <a class="btn ghost" href="https://github.com/Fansaz" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.82-.26.82-.57v-2.04c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .3"/></svg>GitHub: Fansaz</a>
+      </div>
+    </div>
+    <div>
+      <h2 class="sec-h" id="notes"><span class="n">12</span>Notes on the Data</h2>
+      <ul class="notes">
+        <li>Harbor &amp; Pine is a fictional agency built for the DM setter. Every lead, conversation and booking shown is mock data.</li>
+        <li>The voice receptionist ran against a CRM sandbox with synthetic patient data. It is not HIPAA covered; that would need a BAA and an enterprise tier.</li>
+        <li>The reschedule work was done for a real client and is described without naming them.</li>
+        <li>Figures are as recorded in each project's case study. ColdOutbounder figures are live readings from 5 October 2026.</li>
+      </ul>
+      <h2 class="sec-h" id="revisions" style="margin-top:36px"><span class="n">13</span>Revision History</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th scope="col">Rev</th><th scope="col">Date</th><th scope="col">Change</th></tr></thead>
+          <tbody><tr><td class="mono">2026.10</td><td class="mono">Oct 2026</td><td>First release: six systems.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="pagefoot"><span>MF-AI6 · Agentic Systems Portfolio · Rev 2026.10</span><span>Page 9 of 9</span></div>
+</section>
+</main>
+
+<dialog class="lb" id="lb" aria-label="Enlarged figure">
+  <div id="lb-slot"></div>
+  <div class="bar"><span id="lb-cap"></span><button type="button" id="lb-close">Close</button></div>
+</dialog>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var noMotion = function () { return reduce.matches; };
+
+  /* Theme */
+  var themeBtn = document.getElementById('theme');
+  var modes = ['auto', 'light', 'dark'];
+  function setTheme(m) {
+    if (m === 'auto') delete root.dataset.theme; else root.dataset.theme = m;
+    themeBtn.textContent = m === 'auto' ? 'Auto' : m === 'light' ? 'Light' : 'Dark';
+    themeBtn.setAttribute('aria-label', 'Colour theme: ' + (m === 'auto' ? 'follows system' : m) + '. Activate to change.');
+    try { if (m === 'auto') localStorage.removeItem('mf-theme'); else localStorage.setItem('mf-theme', m); } catch (e) {}
+  }
+  setTheme(root.dataset.theme || 'auto');
+  themeBtn.addEventListener('click', function () {
+    var cur = root.dataset.theme || 'auto';
+    setTheme(modes[(modes.indexOf(cur) + 1) % 3]);
+  });
+
+  /* Running head: current section */
+  var where = document.getElementById('where');
+  var shown = '';
+  function showWhere(text) {
+    if (text === shown) return;
+    shown = text;
+    where.innerHTML = '';
+    var s = document.createElement('span');
+    s.textContent = text;
+    where.appendChild(s);
+    if (!noMotion() && s.animate) s.animate([{ transform: 'translateY(100%)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 260, easing: 'cubic-bezier(0.16,1,0.3,1)' });
+  }
+  var secs = [].slice.call(document.querySelectorAll('.sheet[data-where]'));
+  var headIO = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) showWhere(e.target.getAttribute('data-where')); });
+  }, { rootMargin: '-30% 0px -65% 0px' });
+  secs.forEach(function (s) { headIO.observe(s); });
+
+  /* Front page entrance */
+  if (!noMotion() && document.body.animate) {
+    var ease = 'cubic-bezier(0.16,1,0.3,1)';
+    document.getElementById('heavy').animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 900, easing: ease });
+    document.getElementById('name').animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 900, delay: 120, easing: ease, fill: 'backwards' });
+    [].forEach.call(document.querySelectorAll('.roles span'), function (el, i) {
+      el.animate([{ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 500, delay: 420 + i * 90, easing: ease, fill: 'backwards' });
+    });
+    [].forEach.call(document.querySelectorAll('.status > div'), function (el, i) {
+      el.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 420, delay: 500 + i * 60, easing: ease, fill: 'backwards' });
+    });
+  }
+
+  /* Figure 1-1: functional block diagram */
+  var NS = 'http://www.w3.org/2000/svg';
+  var BUSES = [
+    { k: 'GHL', a: 'GoHighLevel', b: 'API' },
+    { k: 'HRM', a: 'Hermes', b: 'runtime' },
+    { k: 'PG', a: 'Postgres', b: 'Supabase' },
+    { k: 'EDGE', a: 'Edge', b: 'CF, Traefik' }
+  ];
+  var BLOCKS = [
+    { id: 'mf01', code: 'MF-01 VOX', name: 'Ava voice receptionist', pin: 'Phone', uses: [0, 3] },
+    { id: 'mf02', code: 'MF-02 OUT', name: 'ColdOutbounder', pin: 'Email', uses: [0, 2, 3] },
+    { id: 'mf03', code: 'MF-03 DMS', name: 'DM setter', pin: 'DM', uses: [1, 2, 3] },
+    { id: 'mf04', code: 'MF-04 FUN', name: 'Funnel Studio', pin: 'QR + web', uses: [1, 3] },
+    { id: 'mf05', code: 'MF-05 RSV', name: 'Reschedule guardrails', pin: 'SMS', uses: [0, 1, 2] },
+    { id: 'mf06', code: 'MF-06 KB', name: 'Knowledge base agent', pin: 'Telegram', uses: [2] }
+  ];
+  var svg = document.getElementById('fbd-svg');
+  var fig = document.getElementById('fbd');
+  var model = null;
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function render() {
+    var W = Math.max(280, Math.round(fig.clientWidth - (parseFloat(getComputedStyle(fig).paddingLeft) * 2)));
+    var narrow = W < 520;
+    var rh = narrow ? 56 : 54, top = 8, bh = narrow ? 42 : 38;
+    var pinW = narrow ? 0 : 78;
+    var bx = pinW, bw = narrow ? Math.round(W * 0.6) : Math.min(260, Math.round(W * 0.44));
+    var busStart = bx + bw + (narrow ? 22 : 34), busEnd = W - (narrow ? 14 : 30);
+    var gap = (busEnd - busStart) / (BUSES.length - 1);
+    var H = top + BLOCKS.length * rh + (narrow ? 26 : 40);
+    var bottom = top + BLOCKS.length * rh - (rh - bh) / 2 + 6;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.innerHTML = '';
+    var m = { blocks: [], buses: [], W: W, bottom: bottom };
+    BUSES.forEach(function (b, i) {
+      var x = Math.round(busStart + gap * i);
+      var g = el('g', {}, svg);
+      var line = el('line', { 'class': 'bus', x1: x, y1: top - 2, x2: x, y2: bottom }, g);
+      if (narrow) {
+        el('text', { 'class': 'buslbl', x: x, y: bottom + 18 }, g).textContent = b.k;
+      } else {
+        el('text', { 'class': 'buslbl', x: x, y: bottom + 18 }, g).textContent = b.a;
+        el('text', { 'class': 'buslbl2', x: x, y: bottom + 32 }, g).textContent = b.b;
+      }
+      m.buses.push({ x: x, g: g, line: line });
+    });
+    BLOCKS.forEach(function (b, i) {
+      var y = top + i * rh, cy = y + bh / 2;
+      var wires = el('g', {}, svg);
+      var far = Math.max.apply(null, b.uses);
+      var tap = el('line', { 'class': 'tap', x1: bx + bw, y1: cy, x2: m.buses[far].x, y2: cy }, wires);
+      var dots = b.uses.map(function (u) { return el('circle', { 'class': 'dot', cx: m.buses[u].x, cy: cy, r: 3.6 }, wires); });
+      var pin = null;
+      if (!narrow) {
+        pin = el('line', { 'class': 'pin', x1: bx - 16, y1: cy, x2: bx, y2: cy }, wires);
+        var pl = el('text', { 'class': 'pinlbl', x: bx - 22, y: cy + 4, 'text-anchor': 'end' }, wires);
+        pl.textContent = b.pin;
+      }
+      var a = el('a', { href: '#' + b.id, 'aria-label': b.code + ', ' + b.name + '. Input: ' + b.pin + '. Open its section.' }, svg);
+      var g = el('g', { 'class': 'blk' }, a);
+      el('rect', { x: bx, y: y, width: bw, height: bh }, g);
+      el('text', { 'class': 'code', x: bx + 10, y: y + (narrow ? 15 : 14) }, g).textContent = narrow ? b.code + ' · ' + b.pin : b.code;
+      var nm = el('text', { 'class': 'name', x: bx + 10, y: y + (narrow ? 32 : 30) }, g);
+      nm.textContent = b.name;
+      if (narrow) nm.setAttribute('style', 'font-size:12.5px');
+      var rec = { b: b, a: a, g: g, wires: wires, tap: tap, dots: dots, cy: cy, x0: bx + bw };
+      m.blocks.push(rec);
+      a.addEventListener('mouseenter', function () { activate(rec); });
+      a.addEventListener('mouseleave', function () { activate(null); });
+      a.addEventListener('focus', function () { activate(rec); });
+      a.addEventListener('blur', function () { activate(null); });
+    });
+    model = m;
+    if (active) { var again = m.blocks.filter(function (r) { return r.b.id === active.b.id; })[0]; active = null; activate(again || null); }
+  }
+  var active = null;
+  function activate(rec) {
+    if (!model) return;
+    active = rec;
+    fig.classList.toggle('has-active', !!rec);
+    model.blocks.forEach(function (r) {
+      var on = r === rec;
+      r.g.classList.toggle('on', on);
+      r.tap.classList.toggle('on', on);
+      r.dots.forEach(function (d) { d.classList.toggle('on', on); });
+      r.a.classList.toggle('ghost', !!rec && !on);
+      r.wires.classList.toggle('ghost', !!rec && !on);
+    });
+    model.buses.forEach(function (bus, i) {
+      var on = !!rec && rec.b.uses.indexOf(i) > -1;
+      bus.line.classList.toggle('on', on);
+      bus.g.classList.toggle('ghost', !!rec && !on);
+    });
+  }
+  render();
+  var rT;
+  if (window.ResizeObserver) new ResizeObserver(function () { clearTimeout(rT); rT = setTimeout(render, 80); }).observe(fig);
+
+  /* Draw-in once, then signal packets */
+  function drawIn() {
+    if (noMotion() || !model) return;
+    var ease = 'cubic-bezier(0.16,1,0.3,1)';
+    model.buses.forEach(function (bus, i) {
+      var len = model.bottom;
+      bus.line.style.strokeDasharray = len;
+      bus.line.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 900, delay: 250 + i * 90, easing: ease, fill: 'backwards' }).onfinish = function () { bus.line.style.strokeDasharray = ''; };
+    });
+    model.blocks.forEach(function (r, i) {
+      r.g.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 520, delay: 300 + i * 80, easing: ease, fill: 'backwards' });
+      var len = parseFloat(r.tap.getAttribute('x2')) - r.x0;
+      r.tap.style.strokeDasharray = len;
+      r.tap.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, delay: 700 + i * 80, easing: ease, fill: 'backwards' }).onfinish = function () { r.tap.style.strokeDasharray = ''; };
+      r.dots.forEach(function (d, j) { d.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: 1000 + i * 80 + j * 60, fill: 'backwards' }); });
+    });
+  }
+  drawIn();
+
+  var visible = false, packets = [], lastSpawn = 0, raf = 0;
+  new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) loop(); }, { threshold: 0.1 }).observe(fig);
+  function spawn(rec, busIdx) {
+    if (!model) return;
+    var bus = model.buses[busIdx];
+    var c = el('circle', { 'class': 'pk', r: 3, cx: rec.x0, cy: rec.cy }, svg);
+    packets.push({ c: c, x0: rec.x0, y0: rec.cy, x1: bus.x, y1: model.bottom, t: 0, dur: 1300 + Math.random() * 300 });
+  }
+  function loop() {
+    cancelAnimationFrame(raf);
+    var prev = performance.now();
+    function frame(now) {
+      if (!visible || document.hidden || noMotion()) { packets.forEach(function (p) { p.c.remove(); }); packets = []; return; }
+      var dt = Math.min(64, now - prev); prev = now;
+      if (model && now - lastSpawn > (active ? 380 : 1100) && now > 1800) {
+        lastSpawn = now;
+        var rec = active || model.blocks[Math.floor(Math.random() * model.blocks.length)];
+        var u = rec.b.uses[Math.floor(Math.random() * rec.b.uses.length)];
+        if (!active || packets.length < 8) spawn(rec, u);
+      }
+      packets = packets.filter(function (p) {
+        p.t += dt / p.dur;
+        if (p.t >= 1 || !p.c.isConnected) { p.c.remove(); return false; }
+        var e = 1 - Math.pow(1 - p.t, 2);
+        var hx = p.x1 - p.x0, vy = p.y1 - p.y0, L = hx + vy, d = e * L;
+        var x = d <= hx ? p.x0 + d : p.x1;
+        var y = d <= hx ? p.y0 : p.y0 + (d - hx);
+        p.c.setAttribute('cx', x); p.c.setAttribute('cy', y);
+        p.c.setAttribute('opacity', p.t > 0.85 ? (1 - p.t) / 0.15 : 1);
+        return true;
+      });
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && visible) loop(); });
+
+  /* Scroll-in: rules, signal chains, bars, figures */
+  function countUp(td) {
+    var to = parseFloat(td.getAttribute('data-count'));
+    var dec = parseInt(td.getAttribute('data-dec') || '0', 10);
+    var fmt = function (v) { return v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }); };
+    if (noMotion() || to === 0) { td.textContent = fmt(to); return; }
+    var t0 = performance.now(), dur = 700;
+    setTimeout(function () { td.textContent = fmt(to); }, dur + 250);
+    (function step(now) {
+      var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      td.textContent = fmt(to * e);
+      if (p < 1) requestAnimationFrame(step); else td.textContent = fmt(to);
+    })(t0);
+  }
+  function replay(node, cls) {
+    node.classList.add(cls);
+    void node.offsetWidth;
+    node.classList.remove(cls);
+  }
+  if (!noMotion() && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var t = e.target;
+        io.unobserve(t);
+        if (t.classList.contains('chain')) {
+          [].forEach.call(t.children, function (li, i) { li.style.setProperty('--d', (i * 0.11) + 's'); li.querySelector('.node').style.setProperty('--d', (i * 0.11) + 's'); });
+          replay(t, 'pre-chain');
+          var nodes = t.querySelectorAll('.node'), i = 0;
+          var hot = setInterval(function () {
+            [].forEach.call(nodes, function (n) { n.classList.remove('hot'); });
+            if (i < nodes.length) { nodes[i].classList.add('hot'); i++; } else clearInterval(hot);
+          }, 160);
+        } else if (t.classList.contains('chart')) {
+          replay(t, 'pre-bars');
+        } else if (t.classList.contains('rule-draw')) {
+          replay(t, 'pre-rule');
+        } else if (t.tagName === 'TABLE') {
+          [].forEach.call(t.querySelectorAll('[data-count]'), countUp);
+        }
+      });
+    }, { rootMargin: '0px 0px 8% 0px', threshold: 0 });
+    var below = function (n) { return n.getBoundingClientRect().top > innerHeight; };
+    [].forEach.call(document.querySelectorAll('.chain, .chart, .rule-draw'), function (n) { if (below(n)) io.observe(n); });
+    [].forEach.call(document.querySelectorAll('table'), function (t) { if (t.querySelector('[data-count]') && below(t)) io.observe(t); });
+  }
+
+  /* Lightbox */
+  var lb = document.getElementById('lb'), lbSlot = document.getElementById('lb-slot'), lbCap = document.getElementById('lb-cap');
+  var opener = null;
+  [].forEach.call(document.querySelectorAll('.shot'), function (b) {
+    b.setAttribute('aria-label', 'Enlarge: ' + (b.querySelector('img').alt || 'figure'));
+    b.addEventListener('click', function () {
+      if (!lb.showModal) { window.open(b.getAttribute('data-full'), '_blank'); return; }
+      opener = b;
+      lbSlot.innerHTML = '';
+      var big = new Image();
+      big.src = b.getAttribute('data-full');
+      big.alt = b.querySelector('img').alt;
+      lbSlot.appendChild(big);
+      lbCap.textContent = b.getAttribute('data-cap') || '';
+      lb.showModal();
+    });
+  });
+  document.getElementById('lb-close').addEventListener('click', function () { lb.close(); });
+  lb.addEventListener('click', function (e) { if (e.target === lb) lb.close(); });
+  lb.addEventListener('close', function () { lbSlot.innerHTML = ''; if (opener) opener.focus(); });
+
+  /* One video at a time */
+  var vids = [].slice.call(document.querySelectorAll('video'));
+  vids.forEach(function (v) { v.addEventListener('play', function () { vids.forEach(function (o) { if (o !== v) o.pause(); }); }); });
+})();
+</script>
+</body>
+</html>
