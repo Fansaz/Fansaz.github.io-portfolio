@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  /* Base reset */
+  :root {
+    color-scheme: light;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>Ava Voice Receptionist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  /* Layout: single reading spine, full-bleed section bands, inline evidence blocks. */
+  :root {
+    --bg: #f5f8f9;
+    --surface: #ffffff;
+    --surface-2: #eef3f5;
+    --border: #d7e1e5;
+    --border-strong: #b9c8ce;
+    --fg: #0d1a1f;
+    --fg-muted: #566a72;
+    --fg-faint: #7d9099;
+    --accent: #0a7683;
+    --accent-bright: #0e9aab;
+    --accent-wash: #e2f1f3;
+    --critical: #a8392b;
+    --critical-wash: #fbeae7;
+    --good: #1b6f48;
+    --good-wash: #e4f3eb;
+    --warn: #8a5d00;
+    --warn-wash: #fbf0d9;
+
+    --font-display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+    --font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    --measure: 68ch;
+    --wrap: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1013;
+      --surface: #111a1e;
+      --surface-2: #162228;
+      --border: #22333a;
+      --border-strong: #354b54;
+      --fg: #e4eef1;
+      --fg-muted: #94a9b1;
+      --fg-faint: #6f858e;
+      --accent: #2fc0d4;
+      --accent-bright: #4fd8ea;
+      --accent-wash: #0d2a30;
+      --critical: #ff9382;
+      --critical-wash: #2d1613;
+      --good: #4fcf8b;
+      --good-wash: #0f2a1e;
+      --warn: #e3b351;
+      --warn-wash: #2b2210;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0a1013;
+    --surface: #111a1e;
+    --surface-2: #162228;
+    --border: #22333a;
+    --border-strong: #354b54;
+    --fg: #e4eef1;
+    --fg-muted: #94a9b1;
+    --fg-faint: #6f858e;
+    --accent: #2fc0d4;
+    --accent-bright: #4fd8ea;
+    --accent-wash: #0d2a30;
+    --critical: #ff9382;
+    --critical-wash: #2d1613;
+    --good: #4fcf8b;
+    --good-wash: #0f2a1e;
+    --warn: #e3b351;
+    --warn-wash: #2b2210;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: var(--wrap);
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    margin: 0;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+
+  p { margin: 0; }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  code, .mono { font-family: var(--font-mono); }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* ---------- Masthead ---------- */
+  .masthead {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding-block: 56px 44px;
+  }
+  .signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--good);
+    background: var(--good-wash);
+    border: 1px solid color-mix(in srgb, var(--good) 28%, transparent);
+    padding: 5px 11px;
+    border-radius: 999px;
+  }
+  .signal span.dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--good);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+  @media (prefers-reduced-motion: reduce) {
+    .signal span.dot { animation: none; }
+  }
+
+  .masthead h1 {
+    font-size: clamp(2.3rem, 6vw, 4.1rem);
+    font-weight: 800;
+    margin-block: 22px 0;
+    max-width: 17ch;
+  }
+  .masthead .deck {
+    font-size: clamp(1.02rem, 2.1vw, 1.2rem);
+    color: var(--fg-muted);
+    max-width: 58ch;
+    margin-top: 18px;
+    line-height: 1.5;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 11px;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    color: var(--fg-muted);
+    background: var(--bg);
+  }
+  .chip b { color: var(--fg); font-weight: 600; }
+
+  /* ---------- Stat strip ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .stat {
+    padding: 26px 20px;
+    border-right: 1px solid var(--border);
+    min-width: 0;
+  }
+  .stat:last-child { border-right: none; }
+  .stat .num {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .stat .lab {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-top: 9px;
+    line-height: 1.4;
+  }
+
+  /* ---------- Sections ---------- */
+  section { padding-block: 60px; }
+  section + section { border-top: 1px solid var(--border); }
+  .band { background: var(--surface); }
+
+  .sec-head { margin-bottom: 34px; }
+  .sec-head h2 {
+    font-size: clamp(1.6rem, 3.6vw, 2.2rem);
+    font-weight: 700;
+    margin-top: 10px;
+  }
+  .sec-head .sub {
+    color: var(--fg-muted);
+    max-width: var(--measure);
+    margin-top: 12px;
+  }
+
+  .prose { max-width: var(--measure); }
+  .prose p + p { margin-top: 16px; }
+  .prose h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 32px;
+    margin-bottom: 10px;
+  }
+  .prose ul { margin: 14px 0 0; padding-left: 20px; }
+  .prose li { margin-bottom: 8px; }
+  .prose strong { font-weight: 600; }
+
+  .lede {
+    font-size: 1.14rem;
+    line-height: 1.55;
+    color: var(--fg);
+  }
+
+  /* ---------- Architecture diagram ---------- */
+  .arch {
+    margin-top: 10px;
+    display: grid;
+    gap: 0;
+    justify-items: center;
+  }
+  .node {
+    width: 100%;
+    max-width: 440px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .band .node { background: var(--bg); }
+  .node .n-title { font-weight: 600; font-size: 15px; }
+  .node .n-sub {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--fg-muted);
+    margin-top: 4px;
+  }
+  .node.is-agent { border-color: var(--accent); border-width: 2px; }
+  .node.is-agent .n-title { color: var(--accent); }
+  .connector {
+    width: 2px;
+    height: 24px;
+    background: var(--border-strong);
+  }
+  .branches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    width: 100%;
+    margin-block: 4px;
+  }
+  .branch {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--bcolor, var(--border-strong));
+    border-radius: 5px;
+    padding: 13px 14px;
+    background: var(--surface);
+    min-width: 0;
+  }
+  .band .branch { background: var(--bg); }
+  .branch .b-when {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--bcolor, var(--fg-muted));
+    font-weight: 600;
+  }
+  .branch .b-do { font-size: 14px; margin-top: 6px; line-height: 1.45; }
+  .b-decline { --bcolor: var(--fg-faint); }
+  .b-911 { --bcolor: var(--critical); }
+  .b-transfer { --bcolor: var(--warn); }
+  .b-book { --bcolor: var(--good); }
+
+  .ghl-steps {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+    max-width: 440px;
+  }
+  .ghl-step {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 11px 13px;
+    font-size: 14px;
+    min-width: 0;
+  }
+  .ghl-step .sn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-wash);
+    border-radius: 3px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .ghl-step code { font-size: 12px; color: var(--fg-muted); }
+
+  /* ---------- Phases ---------- */
+  .phases { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .phase {
+    background: var(--surface);
+    padding: 22px;
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 18px;
+    min-width: 0;
+  }
+  .band .phase { background: var(--bg); }
+  .phase .pnum {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    letter-spacing: 0.04em;
+  }
+  .phase h3 { font-size: 1.08rem; font-weight: 600; }
+  .phase p { color: var(--fg-muted); margin-top: 8px; font-size: 15px; max-width: 62ch; }
+  .phase .detail { margin-top: 12px; }
+  .phase ul { margin: 10px 0 0; padding-left: 18px; color: var(--fg-muted); font-size: 14.5px; }
+  .phase li { margin-bottom: 6px; }
+  .phase li strong { color: var(--fg); font-weight: 600; }
+
+  /* ---------- Tables ---------- */
+  .table-scroll { overflow-x: auto; margin-top: 18px; border: 1px solid var(--border); border-radius: 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 460px; }
+  th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  thead th {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    background: var(--surface-2);
+    font-weight: 600;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td strong { font-weight: 600; }
+  td code { font-size: 12.5px; }
+
+  /* ---------- Problem cards ---------- */
+  .problems { display: grid; gap: 20px; }
+  .problem {
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    overflow: hidden;
+    min-width: 0;
+  }
+  .band .problem { background: var(--bg); }
+  .problem > header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .problem .pid {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--critical);
+    background: var(--critical-wash);
+    border: 1px solid color-mix(in srgb, var(--critical) 25%, transparent);
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .problem h3 { font-size: 1.12rem; font-weight: 600; min-width: 0; }
+  .problem .body { padding: 20px 22px 22px; }
+  .step-row { display: grid; gap: 14px; }
+  .step-row + .step-row { margin-top: 16px; }
+  .step {
+    display: grid;
+    grid-template-columns: 94px 1fr;
+    gap: 16px;
+    align-items: start;
+    min-width: 0;
+  }
+  .step .k {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-top: 4px;
+  }
+  .k-symptom { color: var(--critical); }
+  .k-cause { color: var(--warn); }
+  .k-fix { color: var(--good); }
+  .step .v { font-size: 15px; color: var(--fg-muted); min-width: 0; }
+  .step .v strong { color: var(--fg); font-weight: 600; }
+  .step .v ul { margin: 8px 0 0; padding-left: 18px; }
+  .step .v li { margin-bottom: 5px; }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 13px 16px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-wash);
+    border-radius: 0 4px 4px 0;
+    font-size: 14.5px;
+  }
+  .takeaway b { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 5px; }
+
+  pre {
+    margin: 14px 0 0;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--fg);
+  }
+  pre .cm { color: var(--fg-faint); }
+  pre .st { color: var(--accent); }
+
+  /* ---------- Checklist ---------- */
+  .checks { display: grid; gap: 9px; margin-top: 6px; }
+  .check {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--good);
+    border-radius: 5px;
+    padding: 13px 15px;
+    font-size: 15px;
+    min-width: 0;
+  }
+  .band .check { background: var(--bg); }
+  .check .tick { color: var(--good); font-weight: 700; font-family: var(--font-mono); }
+
+  /* ---------- Stack grid ---------- */
+  .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 6px; }
+  .stack-item {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 15px 17px;
+    background: var(--surface);
+    min-width: 0;
+  }
+  .band .stack-item { background: var(--bg); }
+  .stack-item .layer {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .stack-item .tech { font-weight: 600; margin-top: 5px; font-size: 15px; }
+
+  footer.page-end {
+    border-top: 1px solid var(--border);
+    padding-block: 34px 48px;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+
+  @media (max-width: 620px) {
+    .phase { grid-template-columns: 1fr; gap: 12px; }
+    .phase .pnum { width: 54px; }
+    .step { grid-template-columns: 1fr; gap: 5px; }
+    .step .k { padding-top: 0; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    section { padding-block: 44px; }
+  }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="signal"><span class="dot"></span> Live on a real phone line</div>
+    <h1>An AI receptionist that books real dental appointments</h1>
+    <p class="deck">A voice agent that answers a dental surgery practice's inbound calls, screens for medical emergencies, books onto the live practice calendar, and hands off to a human on request. Built end to end: requirements, prompt engineering, backend, integrations, telephony, and production debugging.</p>
+    <div class="meta-row">
+      <span class="chip"><b>Role</b> &nbsp;Sole builder</span>
+      <span class="chip"><b>Voice</b> &nbsp;ElevenLabs Agents</span>
+      <span class="chip"><b>Backend</b> &nbsp;Cloudflare Workers</span>
+      <span class="chip"><b>CRM</b> &nbsp;GoHighLevel API</span>
+      <span class="chip"><b>Telephony</b> &nbsp;Twilio</span>
+    </div>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat">
+    <div class="num">45%</div>
+    <div class="lab">Of inbound calls were being answered before the build</div>
+  </div>
+  <div class="stat">
+    <div class="num">~$730k</div>
+    <div class="lab">Estimated annual revenue lost to missed calls</div>
+  </div>
+  <div class="stat">
+    <div class="num">4</div>
+    <div class="lab">In-scope services; everything else is declined, not booked</div>
+  </div>
+  <div class="stat">
+    <div class="num">~350</div>
+    <div class="lab">Lines of middleware. No database, no framework</div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">01 — The problem</div>
+      <h2>The bottleneck was answering the phone</h2>
+    </div>
+    <div class="prose">
+      <p class="lede">A dental surgery practice was answering only 45% of its inbound calls. Its lead flow is driven by paid marketing, so every unanswered call is a lost high-value surgical case.</p>
+      <p>The constraint sat specifically on inbound call capacity, not on lead generation. The practice could not scale marketing spend any further, because leads were already being lost before anyone could service them. They estimated the gap at roughly $730,000 a year.</p>
+
+      <h3>Scope was deliberately narrow</h3>
+      <p>The line only handles four services: <strong>wisdom teeth</strong>, <strong>dental implants</strong>, <strong>dentures</strong>, and <strong>emergency extractions</strong>. Anything else — routine cleanings, whitening, orthodontics, checkups — had to be politely declined rather than booked.</p>
+      <p>The practice also wanted the three higher-value services prioritized over emergency extractions under scheduling pressure. That business rule had to be implemented without ever compromising medical urgency, which shaped the whole safety model.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">02 — Architecture</div>
+      <h2>What I built</h2>
+      <p class="sub">A voice agent on a real phone number, a custom middleware layer that owns the booking logic, and the practice's own CRM as the system of record.</p>
+    </div>
+
+    <div class="arch">
+      <div class="node">
+        <div class="n-title">Caller dials the practice number</div>
+        <div class="n-sub">Twilio · toll-free · SHAKEN/STIR registered</div>
+      </div>
+      <div class="connector"></div>
+      <div class="node is-agent">
+        <div class="n-title">Voice agent &ldquo;Ava&rdquo;</div>
+        <div class="n-sub">ElevenLabs · STT → Gemini 2.5 Flash Lite → TTS</div>
+      </div>
+      <div class="connector"></div>
+      <div class="branches">
+        <div class="branch b-decline">
+          <div class="b-when">Out of scope</div>
+          <div class="b-do">Politely decline, redirect to the main office. No booking attempted.</div>
+        </div>
+        <div class="branch b-911">
+          <div class="b-when">Red flag</div>
+          <div class="b-do">Instruct to call 911 or go to an ER. All scheduling stops for the rest of the call.</div>
+        </div>
+        <div class="branch b-transfer">
+          <div class="b-when">Asks for a human</div>
+          <div class="b-do">Conference-transfer to a live number, mid-call, overriding any step in progress.</div>
+        </div>
+        <div class="branch b-book">
+          <div class="b-when">In scope, screened</div>
+          <div class="b-do">Continue to availability and booking via the middleware.</div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="node">
+        <div class="n-title">Cloudflare Worker</div>
+        <div class="n-sub">custom middleware · owns sequencing + retries</div>
+      </div>
+      <div class="connector"></div>
+      <div class="ghl-steps">
+        <div class="ghl-step"><span class="sn">1</span><div>Check free slots on the service calendar<br><code>GET /calendars/{id}/free-slots</code></div></div>
+        <div class="ghl-step"><span class="sn">2</span><div>Find or create the patient contact<br><code>POST /contacts/upsert</code></div></div>
+        <div class="ghl-step"><span class="sn">3</span><div>Create the appointment<br><code>POST /calendars/events/appointments</code></div></div>
+      </div>
+      <div class="connector"></div>
+      <div class="node">
+        <div class="n-title">Post-booking automation</div>
+        <div class="n-sub">confirmation SMS now · reminder 1 day before</div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:42px">
+      <h3>Why a middleware layer exists</h3>
+      <p>This was the central design decision. Voice-platform tools make <strong>one HTTP call each</strong>. But booking in the CRM needs <strong>two sequential calls with a data dependency</strong>: the contact upsert returns a <code>contactId</code>, and the appointment call requires it.</p>
+      <p>That left two options. Either the language model orchestrates three separate tool calls and correctly carries an ID between them mid-conversation, or the sequencing lives in code. I put it in code. The Worker exposes one clean booking endpoint; contact lookup, calendar mapping, retries and error classification all happen server-side where they are deterministic and testable.</p>
+      <p>A second benefit fell out of that choice: the CRM API token never touches the voice platform at all. It lives only in encrypted secret storage on the Worker.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">03 — Build</div>
+      <h2>End to end, in eight phases</h2>
+      <p class="sub">Each phase is sequenced because the next one depends on it: the agent needs a prompt before it needs tools, and tools need a backend before they need a phone number.</p>
+    </div>
+
+    <div class="phases">
+      <div class="phase">
+        <div class="pnum">01</div>
+        <div>
+          <h3>Agent design and prompt engineering</h3>
+          <p>The agent persona is defined by a structured system prompt with explicitly separated concerns, so that behavioural rules can be changed without disturbing safety rules.</p>
+          <div class="detail">
+            <ul>
+              <li><strong>Call flow</strong> — a master five-step procedure that is the single source of truth for sequencing</li>
+              <li><strong>Non-negotiable boundaries</strong> — never diagnose, never promise pricing or outcomes, never advise on medication</li>
+              <li><strong>Red-flag screening</strong> — three consolidated safety questions and the 911 escalation path</li>
+              <li><strong>Business prioritization</strong> — revenue-based slot preference, written as explicitly subordinate to safety</li>
+              <li><strong>Forbidden statements</strong> — literal phrases that constitute an audit failure</li>
+              <li><strong>Tone</strong> — brevity limits, one question at a time, no internal jargon spoken aloud</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="pnum">02</div>
+        <div>
+          <h3>Model selection</h3>
+          <p>Gemini 2.5 Flash Lite, chosen for three specific reasons: roughly 3&times; cheaper per token than comparable alternatives, on the voice platform's HIPAA-eligible model list so a future production migration does not require re-validation, and not a reasoning model — which mattered more than expected, as problem 01 below explains.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="pnum">03</div>
+        <div>
+          <h3>Knowledge base</h3>
+          <p>Deliberately lean: clinic hours, location, FAQs, and per-service price estimates. This was a reversal. An earlier iteration ran a 13-document knowledge base, which made the agent recite source text almost verbatim and blend entries into long, robotic answers. Rules that must always apply moved into the always-in-context system prompt; only genuine reference material stayed behind.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="pnum">04</div>
+        <div>
+          <h3>The middleware</h3>
+          <p>A Cloudflare Worker with two public endpoints and one authenticated admin endpoint.</p>
+          <div class="detail">
+            <ul>
+              <li><strong>Auth</strong> — shared-secret header on every endpoint except the health check. Voice-platform tool calls carry no cryptographic signature, so a shared secret is the available control</li>
+              <li><strong>Service mapping</strong> — done in code, so the agent only ever handles semantic names like <code>WISDOM_TEETH</code>, never raw calendar IDs</li>
+              <li><strong>Timezone</strong> — day boundaries computed against Eastern midnight, not UTC midnight, with the DST offset derived dynamically rather than hardcoded</li>
+              <li><strong>Retries</strong> — transient failures retry twice before the caller hears anything; genuine conflicts skip retries entirely</li>
+              <li><strong>Failure log</strong> — every failure written to Cloudflare KV with the real upstream error, 30-day retention</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="pnum">05</div>
+        <div>
+          <h3>CRM and calendar integration</h3>
+          <p>Authenticated with a Private Integration Token scoped to a single sub-account — the modern alternative to a full OAuth marketplace app, with no review process or redirect flow. Scopes were granted least-privilege: read calendars, write calendar events, read and write contacts.</p>
+          <p>One calendar per service, each with its own duration and business hours, because the CRM's model is strictly one calendar per service. The whole integration was built and validated against a free developer sandbox, so no real client data was touched during development.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="pnum">06</div>
+        <div>
+          <h3>Tool wiring</h3>
+          <p>Two webhook tools, each with a JSON-schema body where every parameter carries a description the model reads at runtime to decide what to send. The shared secret is stored as a secret-type header rather than plaintext config.</p>
+          <div class="detail">
+            <ul>
+              <li><code>check_availability</code> — appointment type (enum of the four services), start date, end date, timezone</li>
+              <li><code>book_appointment</code> — appointment type, full name, phone, exact start time</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="pnum">07</div>
+        <div>
+          <h3>Telephony and human transfer</h3>
+          <p>A toll-free number with voice capability, imported via the native Twilio integration and assigned to the agent, with SHAKEN/STIR registered to improve answer rates on the outbound transfer leg.</p>
+          <p>Transfer uses a system tool with a natural-language trigger condition and a fixed destination number, as a conference transfer so the caller and the human end up connected and the agent drops out. The destination can be any phone number — it does not need to be connected to the voice platform at all.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="pnum">08</div>
+        <div>
+          <h3>Post-booking automation</h3>
+          <p>A CRM workflow triggered on appointment status &ldquo;new&rdquo;, filtered to API-created appointments: confirmation SMS immediately, a wait-until step timed to one day before the appointment, then a reminder SMS.</p>
+          <p>The trigger choice mattered. The CRM's &ldquo;customer booked appointment&rdquo; trigger only fires for bookings made through its own booking widget. Appointments created through the API need the appointment-status trigger, which explicitly supports API-sourced events.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">04 — Debugging</div>
+      <h2>Six problems worth reading about</h2>
+      <p class="sub">Each of these was found by testing, diagnosed from evidence rather than guesswork, and fixed at the root rather than patched at the surface.</p>
+    </div>
+
+    <div class="problems">
+
+      <article class="problem">
+        <header>
+          <span class="pid">PROBLEM 01</span>
+          <h3>The agent read its own internal reasoning out loud</h3>
+        </header>
+        <div class="body">
+          <div class="step-row">
+            <div class="step">
+              <div class="k k-symptom">Symptom</div>
+              <div class="v">The agent spoke its entire chain of thought before answering: <em>&ldquo;The user is asking about working hours. I should answer concisely as this is a phone call. I should not use digits…&rdquo;</em> — and then gave the actual answer.</div>
+            </div>
+            <div class="step">
+              <div class="k k-cause">Cause</div>
+              <div class="v">The configured model was a reasoning model that emits chain of thought inline in its response. Suppressing it requires a vendor-specific API parameter, and the platform's custom-LLM integration passes responses through verbatim — it has no provider-specific logic to strip another vendor's reasoning format. The platform's own &ldquo;reasoning effort&rdquo; control sends a generic parameter that this provider silently ignored.</div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix</div>
+              <div class="v">Switched to a natively integrated model where the platform actually controls the reasoning setting. This also resolved a compliance problem: the original model was not on the HIPAA-eligible list, and a custom-LLM endpoint routes conversation content to a third party outside the platform's BAA boundary entirely.</div>
+            </div>
+          </div>
+          <div class="takeaway"><b>Takeaway</b>&ldquo;Supports any OpenAI-compatible endpoint&rdquo; does not mean every platform feature works with every endpoint.</div>
+        </div>
+      </article>
+
+      <article class="problem">
+        <header>
+          <span class="pid">PROBLEM 02</span>
+          <h3>Every booking failed as &ldquo;that time just became unavailable&rdquo;</h3>
+        </header>
+        <div class="body">
+          <div class="step-row">
+            <div class="step">
+              <div class="k k-symptom">Symptom</div>
+              <div class="v">The agent offered times, the caller accepted, and every single booking attempt was rejected as already taken — on an empty calendar.</div>
+            </div>
+            <div class="step">
+              <div class="k k-cause">Diagnosis</div>
+              <div class="v">
+                Added temporary request-body logging to the Worker and captured the real tool call:
+                <pre>{<span class="st">"appointmentType"</span>: <span class="st">"NP-COMP"</span>, <span class="st">"fullName"</span>: <span class="st">""</span>,
+ <span class="st">"phone"</span>: <span class="st">""</span>, <span class="st">"startTime"</span>: <span class="st">"2026-07-10T12:15:00-04:00"</span>}</pre>
+                Two things were wrong. The appointment type was a <strong>stale enum value from a previous iteration</strong> — not a key in the calendar map, so no calendar could be resolved — and the name and phone fields were empty. The enum values in the tool definition had never actually saved; only the description text had been updated. The model was constrained to choosing from obsolete options.
+              </div>
+            </div>
+            <div class="step">
+              <div class="k k-cause">Second cause</div>
+              <div class="v">The Worker was classifying <strong>any</strong> HTTP 400 as &ldquo;slot unavailable&rdquo;, which disguised the real failure as a scheduling conflict. That mislabeling is what made the bug so hard to see.</div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix</div>
+              <div class="v">Corrected the enum values, and rewrote error handling to read what the upstream API actually says — see problem 06.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="problem">
+        <header>
+          <span class="pid">PROBLEM 03</span>
+          <h3>The agent sounded robotic and over-explained everything</h3>
+        </header>
+        <div class="body">
+          <div class="step-row">
+            <div class="step">
+              <div class="k k-symptom">Symptom</div>
+              <div class="v">Long, formal, hedge-laden answers. It often merged two unrelated knowledge-base entries into a single response.</div>
+            </div>
+            <div class="step">
+              <div class="k k-cause">Cause</div>
+              <div class="v">The knowledge base was written as formal reference documents with complete, fully-qualified paragraph answers, and the model was reciting them nearly verbatim. More content made it worse, not better.</div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix</div>
+              <div class="v">
+                Layered:
+                <ul>
+                  <li>Rewrote knowledge-base entries as short, conversational answers</li>
+                  <li>Added a hard two-sentence default limit, with explicit exceptions for safety screening and final confirmations</li>
+                  <li>Added a rule that when a question touches two knowledge-base topics, the agent answers from one and never blends</li>
+                  <li>Moved behavioural rules out of the knowledge base and into the system prompt entirely</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="takeaway"><b>Also caught here</b>A teammate had added two runtime guardrails to suppress over-explaining. Their retry-feedback messages said <em>&ldquo;I am not sure I understand your question&rdquo;</em> — a non-sequitur when the actual violation is answering too much. Had they fired, they would have made the agent sound more broken, not less. Removed in favour of fixing the root cause.</div>
+        </div>
+      </article>
+
+      <article class="problem">
+        <header>
+          <span class="pid">PROBLEM 04</span>
+          <h3>The agent re-asked a question it had already answered</h3>
+        </header>
+        <div class="body">
+          <div class="step-row">
+            <div class="step">
+              <div class="k k-symptom">Symptom</div>
+              <div class="v">Caller says <em>&ldquo;I have pain in my front tooth and I think it needs extraction.&rdquo;</em> The agent completes safety screening, then asks: <em>&ldquo;Is this for a wisdom tooth, a dental implant, or a denture issue?&rdquo;</em></div>
+            </div>
+            <div class="step">
+              <div class="k k-cause">First attempt</div>
+              <div class="v">Added a prose instruction telling it not to re-ask. It did not hold.</div>
+            </div>
+            <div class="step">
+              <div class="k k-cause">Real cause</div>
+              <div class="v">The flow logic was <strong>scattered across three separate prompt sections written far apart</strong>. Following it required the model to connect instructions across distant blocks and hold state across a multi-turn sub-dialogue. That is a weak mechanism.</div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix</div>
+              <div class="v">Consolidated the entire call sequence into a single explicit, ordered procedure at the top of the prompt, with the never-repeat rule stated <strong>at the exact transition point</strong> where the failure occurred. Also broadened the classification rule: any request to extract a non-wisdom tooth is an emergency extraction, whether or not the caller uses the word &ldquo;emergency&rdquo; — because that is the only extraction service offered.</div>
+            </div>
+          </div>
+          <div class="takeaway"><b>Takeaway</b>When a model repeatedly fails to follow an instruction, restructure the instruction. Do not just restate it more emphatically.</div>
+        </div>
+      </article>
+
+      <article class="problem">
+        <header>
+          <span class="pid">PROBLEM 05</span>
+          <h3>Timezone and &ldquo;today&rdquo; were not grounded</h3>
+        </header>
+        <div class="body">
+          <div class="step-row">
+            <div class="step">
+              <div class="k k-symptom">Symptom</div>
+              <div class="v">Intermittent availability lookups against the wrong day, and times quoted without any timezone reference.</div>
+            </div>
+            <div class="step">
+              <div class="k k-cause">Cause</div>
+              <div class="v">Two distinct bugs. The agent had no reliable notion of the current date — it was inferring &ldquo;today&rdquo; rather than knowing it. Separately, day boundaries in the Worker were computed at UTC midnight while the practice operates on Eastern time.</div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix</div>
+              <div class="v">Injected the platform's real-time UTC variable into the prompt as an explicit source of truth, and computed Eastern midnight properly in the Worker with the offset derived dynamically so it stays correct across daylight-saving transitions. Added a requirement that the agent states the timezone out loud when first offering times, so an out-of-state caller is never ambiguous about what &ldquo;3:30&rdquo; means.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="problem">
+        <header>
+          <span class="pid">PROBLEM 06</span>
+          <h3>Error handling that hid the truth</h3>
+        </header>
+        <div class="body">
+          <div class="step-row">
+            <div class="step">
+              <div class="k k-symptom">Symptom</div>
+              <div class="v">Validation errors, rate limits and transient failures all surfaced to the caller as a phantom scheduling conflict, because the Worker treated any 400 or 409 from the booking API as &ldquo;slot taken&rdquo;.</div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix 1 — honest classification</div>
+              <div class="v">
+                Only report a conflict if the upstream error actually indicates one. Verified by deliberately double-booking a slot to capture the real message:
+                <pre>{<span class="st">"message"</span>: <span class="st">"The slot you have selected is no longer available."</span>,
+ <span class="st">"error"</span>: <span class="st">"Bad Request"</span>, <span class="st">"statusCode"</span>: 400}</pre>
+              </div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix 2 — retries</div>
+              <div class="v">
+                Non-conflict failures retry twice before surfacing; genuine conflicts skip retries, since retrying cannot free a taken slot. Verified: a real conflict still fails in under a second rather than stalling through pointless retries.
+                <pre><span class="cm">// Transient failures self-heal silently;</span>
+<span class="cm">// genuine conflicts are never retried.</span>
+for (let attempt = 0; attempt &lt;= retries; attempt++) {
+  result = await ghlFetch(env, path, options);
+  if (result.ok) return result;
+  if (skipRetryIf &amp;&amp; skipRetryIf(result)) return result;
+  if (attempt &lt; retries) await delay(delayMs);
+}</pre>
+              </div>
+            </div>
+            <div class="step">
+              <div class="k k-fix">Fix 3 — persistent log</div>
+              <div class="v">Every failure is written to Cloudflare KV with the real upstream error, 30-day retention, queryable through an authenticated endpoint. Previously, diagnosing a failure meant already watching a live log stream at the exact moment it happened. Now every failure leaves a permanent record.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">05 — Safety</div>
+      <h2>Designed safety, not incidental safety</h2>
+      <p class="sub">This is a healthcare-adjacent product, so the safety model is explicit and takes precedence over every commercial rule in the system.</p>
+    </div>
+    <div class="prose">
+      <h3>Three-question red-flag screening</h3>
+      <p>Asked one at a time, consolidated down from an original seven so a distressed caller does not sit through an interrogation — while still covering every original clinical signal.</p>
+      <ul>
+        <li>Trouble breathing or swallowing, or signs of a severe allergic reaction</li>
+        <li>Heavy bleeding that will not stop, or swelling spreading toward the eye, jaw or neck</li>
+        <li>Major facial or head injury, loss of consciousness, confusion, chest pain, or stroke-like symptoms</li>
+      </ul>
+      <p>Any &ldquo;yes&rdquo; instructs the caller to call 911 or go to an emergency department, and stops all scheduling.</p>
+
+      <h3>Emergency state is sticky</h3>
+      <p>An early test exposed a serious flaw: after correctly flagging an emergency, the caller said something unrelated and the agent went straight back to normal booking. Fixed with an explicit rule that an emergency flag persists for the remainder of the call, regardless of what the caller says next.</p>
+
+      <h3>Business rules can never override safety</h3>
+      <p>The revenue-prioritization rule is written to be explicitly subordinate. It applies to slot preference only, and never to an actual medical emergency. Alongside it sit hard behavioural limits — no diagnosis, no treatment recommendations, no medication advice, no guaranteed pricing or outcomes — plus an explicit list of forbidden phrases that count as audit failures.</p>
+
+      <h3>Compliance position, stated plainly</h3>
+      <p>This build is <strong>not</strong> HIPAA-covered. A BAA and zero-retention mode require an enterprise agreement, and a CRM sandbox is not a compliant environment. All testing used synthetic patient data. The model was chosen to be HIPAA-eligible specifically so that a future production migration does not require re-validating the agent on a different model.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">06 — Results</div>
+      <h2>Verified end to end on a real phone line</h2>
+    </div>
+    <div class="checks">
+      <div class="check"><span class="tick">✓</span><div>Inbound call answered by the agent on a real toll-free number</div></div>
+      <div class="check"><span class="tick">✓</span><div>Caller qualified against the four in-scope services; out-of-scope requests declined without booking</div></div>
+      <div class="check"><span class="tick">✓</span><div>Red-flag screening with correct 911 escalation, persisting for the rest of the call</div></div>
+      <div class="check"><span class="tick">✓</span><div>Live availability pulled from the practice calendar, respecting configured business hours and existing bookings</div></div>
+      <div class="check"><span class="tick">✓</span><div>Real appointment created on the real calendar, with the contact record created automatically</div></div>
+      <div class="check"><span class="tick">✓</span><div>Double-booking correctly prevented and handled conversationally</div></div>
+      <div class="check"><span class="tick">✓</span><div>Live call transfer to a human on request, mid-conversation</div></div>
+      <div class="check"><span class="tick">✓</span><div>Post-booking confirmation and reminder automation wired and published</div></div>
+      <div class="check"><span class="tick">✓</span><div>Transient upstream failures retried automatically; persistent failures logged for 30 days</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">07 — Boundaries</div>
+      <h2>Deliberately out of scope</h2>
+      <p class="sub">Being explicit about what was not built, and why, is part of the work.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Not done</th><th scope="col">Why</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Production deployment with real patient data</strong></td><td>Requires a HIPAA BAA and enterprise tier; a sandbox is not a compliant environment</td></tr>
+          <tr><td><strong>Practice-management-system integration</strong></td><td>The original brief specified a dental PMS; this was built against the CRM the business actually chose to use</td></tr>
+          <tr><td><strong>Real practice content</strong></td><td>Hours, pricing and insurance policy pending an onboarding call with the practice's office manager; all current content is clearly marked placeholder</td></tr>
+          <tr><td><strong>SMS delivery</strong></td><td>Requires A2P 10DLC registration on the sending number; the automation itself is wired and fires correctly</td></tr>
+          <tr><td><strong>Outbound callback for missed calls</strong></td><td>Raised in discovery but never settled by the client; inbound-only by design</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">08 — Stack</div>
+      <h2>What it runs on</h2>
+    </div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="layer">Voice pipeline</div><div class="tech">ElevenLabs Agents</div></div>
+      <div class="stack-item"><div class="layer">Language model</div><div class="tech">Gemini 2.5 Flash Lite</div></div>
+      <div class="stack-item"><div class="layer">Middleware</div><div class="tech">Cloudflare Workers</div></div>
+      <div class="stack-item"><div class="layer">Persistence</div><div class="tech">Cloudflare KV</div></div>
+      <div class="stack-item"><div class="layer">CRM &amp; calendars</div><div class="tech">GoHighLevel API v2</div></div>
+      <div class="stack-item"><div class="layer">Telephony</div><div class="tech">Twilio</div></div>
+      <div class="stack-item"><div class="layer">Automation</div><div class="tech">GoHighLevel Workflows</div></div>
+      <div class="stack-item"><div class="layer">Tooling</div><div class="tech">Wrangler CLI, curl, live log tailing</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="page-end">
+  <div class="wrap">
+    Built end to end: requirements, architecture, prompt engineering, backend development, third-party integrations, telephony, testing, and production debugging.
+  </div>
+</footer>
+</body>
+</html>
